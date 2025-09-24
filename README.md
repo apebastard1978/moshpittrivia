@@ -1,4 +1,5 @@
 Mosh Pit Trivia
+
 Welcome to Mosh Pit Trivia, the ultimate challenge for fans of rock, punk, and metal! Test your knowledge, climb the leaderboard, and prove you're the ultimate music fanatic.
 
 How to Play
