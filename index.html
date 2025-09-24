@@ -415,707 +415,14 @@
         const auth = getAuth(app);
         let userId = '';
         let username = '';
-        let allQuestions = [
-            {
-                "Topic": "Soundgarden",
-                "Question": "Which iconic Detroit music venue hosted Soundgarden's final live performance before Chris Cornell's passing?",
-                "answers": [
-                    "The Crocodile",
-                    "Neumos",
-                    "The Showbox",
-                    "Fox Theatre"
-                ],
-                "correct": "Fox Theatre"
-            },
-            {
-                "Topic": "Soundgarden",
-                "Question": "What instrument did Ben Shepherd primarily play for Soundgarden?",
-                "answers": [
-                    "Bass",
-                    "Guitar",
-                    "Drums",
-                    "Keyboards"
-                ],
-                "correct": "Bass"
-            },
-            {
-                "Topic": "Soundgarden",
-                "Question": "What was the title of Soundgarden's breakthrough 1994 album, which featured the hit single \"Black Hole Sun\"?",
-                "answers": [
-                    "Louder Than Love",
-                    "Badmotorfinger",
-                    "Superunknown",
-                    "Down on the Upside"
-                ],
-                "correct": "Superunknown"
-            },
-            {
-                "Topic": "Soundgarden",
-                "Question": "What unique time signature is used in the song “Spoonman”?",
-                "answers": [
-                    "4/4",
-                    "5/4",
-                    "7/4",
-                    "6/8"
-                ],
-                "correct": "7/4"
-            },
-            {
-                "Topic": "Soundgarden",
-                "Question": "What year did Soundgarden originally form?",
-                "answers": [
-                    "1984",
-                    "1987",
-                    "1990",
-                    "1994"
-                ],
-                "correct": "1984"
-            },
-            {
-                "Topic": "Soundgarden",
-                "Question": "What was the name of Soundgarden’s debut album?",
-                "answers": [
-                    "Badmotorfinger",
-                    "Ultramega OK",
-                    "Superunknown",
-                    "Louder Than Love"
-                ],
-                "correct": "Ultramega OK"
-            },
-            {
-                "Topic": "Soundgarden",
-                "Question": "Which Soundgarden member later joined the band Audioslave?",
-                "answers": [
-                    "Matt Cameron",
-                    "Ben Shepherd",
-                    "Chris Cornell",
-                    "Kim Thayil"
-                ],
-                "correct": "Chris Cornell"
-            },
-            {
-                "Topic": "Soundgarden",
-                "Question": "Which Soundgarden album was released in 1989?",
-                "answers": [
-                    "Ultramega OK",
-                    "Superunknown",
-                    "Louder Than Love",
-                    "King Animal"
-                ],
-                "correct": "Louder Than Love"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "What was the first single from Alice in Chains' album \"Dirt\"?",
-                "answers": [
-                    "Them Bones",
-                    "Rooster",
-                    "Would?",
-                    "Angry Chair"
-                ],
-                "correct": "Them Bones"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "What year did Alice in Chains release their debut album \"Facelift\"?",
-                "answers": [
-                    "1989",
-                    "1990",
-                    "1991",
-                    "1992"
-                ],
-                "correct": "1990"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "What was the name of Alice in Chains' frontman who passed away in 2002?",
-                "answers": [
-                    "Jerry Cantrell",
-                    "Mike Starr",
-                    "Layne Staley",
-                    "Sean Kinney"
-                ],
-                "correct": "Layne Staley"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "Which Alice in Chains song is known for its acoustic sound and is featured on the EP \"Jar of Flies\"?",
-                "answers": [
-                    "Man in the Box",
-                    "Down in a Hole",
-                    "No Excuses",
-                    "Heaven Beside You"
-                ],
-                "correct": "No Excuses"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "Which album from 1992 features songs like \"Rooster\" and \"Them Bones\"?",
-                "answers": [
-                    "Facelift",
-                    "Dirt",
-                    "Jar of Flies",
-                    "Alice in Chains"
-                ],
-                "correct": "Dirt"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "Which member of Alice in Chains is also known for his solo material?",
-                "answers": [
-                    "Layne Staley",
-                    "Mike Inez",
-                    "Jerry Cantrell",
-                    "Sean Kinney"
-                ],
-                "correct": "Jerry Cantrell"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "Which Alice in Chains song is featured on the soundtrack to the movie \"Singles\"?",
-                "answers": [
-                    "Would?",
-                    "Them Bones",
-                    "Man in the Box",
-                    "Rooster"
-                ],
-                "correct": "Would?"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "What year did Alice in Chains reunite with a new vocalist, William DuVall?",
-                "answers": [
-                    "2005",
-                    "2006",
-                    "2007",
-                    "2008"
-                ],
-                "correct": "2006"
-            },
-            {
-                "Topic": "Alice in Chains",
-                "Question": "What was Alice in Chains' last studio album with Layne Staley as vocalist?",
-                "answers": [
-                    "Dirt",
-                    "Jar of Flies",
-                    "Alice in Chains",
-                    "Black Gives Way to Blue"
-                ],
-                "correct": "Alice in Chains"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "What was the title of Pearl Jam's debut album, released in 1991?",
-                "answers": [
-                    "Vs.",
-                    "Ten",
-                    "Vitalogy",
-                    "No Code"
-                ],
-                "correct": "Ten"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "Which Pearl Jam song features the iconic lyric \"I'm still alive\"?",
-                "answers": [
-                    "Even Flow",
-                    "Jeremy",
-                    "Alive",
-                    "Daughter"
-                ],
-                "correct": "Alive"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "Who is the lead vocalist of Pearl Jam?",
-                "answers": [
-                    "Chris Cornell",
-                    "Layne Staley",
-                    "Eddie Vedder",
-                    "Scott Weiland"
-                ],
-                "correct": "Eddie Vedder"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "Which Pearl Jam album was released in 1993 and followed \"Ten\"?",
-                "answers": [
-                    "Vitalogy",
-                    "Vs.",
-                    "No Code",
-                    "Yield"
-                ],
-                "correct": "Vs."
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "What is the name of Pearl Jam's fan club, which often provides exclusive releases and concert tickets?",
-                "answers": [
-                    "The Ten Club",
-                    "The Jam Fanatics",
-                    "Pearl Army",
-                    "The Vedder Heads"
-                ],
-                "correct": "The Ten Club"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "Which Pearl Jam song is known for its powerful music video addressing gun violence and bullying?",
-                "answers": [
-                    "Even Flow",
-                    "Jeremy",
-                    "Black",
-                    "Daughter"
-                ],
-                "correct": "Jeremy"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "What year did Pearl Jam headline the Lollapalooza festival?",
-                "answers": [
-                    "1991",
-                    "1992",
-                    "1993",
-                    "1994"
-                ],
-                "correct": "1992"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "Which Pearl Jam album, released in 1994, is known for its raw and experimental sound?",
-                "answers": [
-                    "Vs.",
-                    "Ten",
-                    "Vitalogy",
-                    "No Code"
-                ],
-                "correct": "Vitalogy"
-            },
-            {
-                "Topic": "Pearl Jam",
-                "Question": "What is the name of the documentary film about Pearl Jam's history and impact?",
-                "answers": [
-                    "Pearl Jam Twenty",
-                    "Live at the Garden",
-                    "Single Video Theory",
-                    "Immagine in Cornice"
-                ],
-                "correct": "Pearl Jam Twenty"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "What was the title of The Screaming Trees' breakthrough album, released in 1992?",
-                "answers": [
-                    "Buzz Factory",
-                    "Uncle Anesthesia",
-                    "Sweet Oblivion",
-                    "Dust"
-                ],
-                "correct": "Sweet Oblivion"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "Who was the lead vocalist for The Screaming Trees?",
-                "answers": [
-                    "Mark Lanegan",
-                    "Gary Lee Conner",
-                    "Van Conner",
-                    "Barrett Martin"
-                ],
-                "correct": "Mark Lanegan"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "Which Screaming Trees song features the lyric \"Nearly lost myself, but I'm still breathing\"?",
-                "answers": [
-                    "Nearly Lost You",
-                    "Shadow Song",
-                    "Dying Days",
-                    "All I Know"
-                ],
-                "correct": "Nearly Lost You"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "Which member of The Screaming Trees also played drums for other notable grunge bands like R.E.M.?",
-                "answers": [
-                    "Gary Lee Conner",
-                    "Van Conner",
-                    "Barrett Martin",
-                    "Mark Lanegan"
-                ],
-                "correct": "Barrett Martin"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "What year did The Screaming Trees originally form?",
-                "answers": [
-                    "1984",
-                    "1985",
-                    "1986",
-                    "1987"
-                ],
-                "correct": "1985"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "What was the name of their 1989 album, produced by Jack Endino?",
-                "answers": [
-                    "Invisible Lantern",
-                    "Buzz Factory",
-                    "Even If and Especially When",
-                    "Clairvoyance"
-                ],
-                "correct": "Buzz Factory"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "Which Screaming Trees song was featured on the soundtrack to the movie \"Singles\"?",
-                "answers": [
-                    "Nearly Lost You",
-                    "Bed of Roses",
-                    "Shadow Song",
-                    "Dying Days"
-                ],
-                "correct": "Nearly Lost You"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "Which record label did The Screaming Trees sign with for their major label debut, \"Uncle Anesthesia\"?",
-                "answers": [
-                    "SST Records",
-                    "Sub Pop",
-                    "Epic Records",
-                    "Caroline Records"
-                ],
-                "correct": "Epic Records"
-            },
-            {
-                "Topic": "The Screaming Trees",
-                "Question": "What instrument did Van Conner primarily play for The Screaming Trees?",
-                "answers": [
-                    "Guitar",
-                    "Bass",
-                    "Drums",
-                    "Keyboards"
-                ],
-                "correct": "Bass"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "What was the title of Pantera's breakthrough album, released in 1990?",
-                "answers": [
-                    "Cowboys from Hell",
-                    "Vulgar Display of Power",
-                    "Far Beyond Driven",
-                    "The Great Southern Trendkill"
-                ],
-                "correct": "Cowboys from Hell"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "Who was the lead vocalist for Pantera?",
-                "answers": [
-                    "Dimebag Darrell",
-                    "Vinnie Paul",
-                    "Philip Anselmo",
-                    "Rex Brown"
-                ],
-                "correct": "Philip Anselmo"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "What was the nickname of Pantera's guitarist, Darrell Abbott?",
-                "answers": [
-                    "The Ripper",
-                    "The Shredder",
-                    "Dimebag Darrell",
-                    "The Metal God"
-                ],
-                "correct": "Dimebag Darrell"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "Which Pantera album debuted at number one on the Billboard 200 chart in 1994?",
-                "answers": [
-                    "Cowboys from Hell",
-                    "Vulgar Display of Power",
-                    "Far Beyond Driven",
-                    "The Great Southern Trendkill"
-                ],
-                "correct": "Far Beyond Driven"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "What year did Pantera originally form?",
-                "answers": [
-                    "1981",
-                    "1983",
-                    "1985",
-                    "1987"
-                ],
-                "correct": "1981"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "Which Pantera song is known for its powerful anti-racism message?",
-                "answers": [
-                    "Walk",
-                    "F**king Hostile",
-                    "A New Level",
-                    "Strength Beyond Strength"
-                ],
-                "correct": "F**king Hostile"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "What was the name of the record label that released most of Pantera's major albums?",
-                "answers": [
-                    "Metal Blade",
-                    "Megaforce",
-                    "Atco Records",
-                    "Elektra Records"
-                ],
-                "correct": "Atco Records"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "Who was the drummer for Pantera?",
-                "answers": [
-                    "Mike Portnoy",
-                    "Dave Lombardo",
-                    "Vinnie Paul",
-                    "Lars Ulrich"
-                ],
-                "correct": "Vinnie Paul"
-            },
-            {
-                "Topic": "Pantera",
-                "Question": "Which Pantera album, released in 1992, is considered a landmark in groove metal?",
-                "answers": [
-                    "Cowboys from Hell",
-                    "Vulgar Display of Power",
-                    "Far Beyond Driven",
-                    "The Great Southern Trendkill"
-                ],
-                "correct": "Vulgar Display of Power"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "What was the title of Slayer's third studio album, released in 1986, which is considered a thrash metal classic?",
-                "answers": [
-                    "Hell Awaits",
-                    "Reign in Blood",
-                    "South of Heaven",
-                    "Seasons in the Abyss"
-                ],
-                "correct": "Reign in Blood"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "Who was the lead vocalist and bassist for Slayer?",
-                "answers": [
-                    "Kerry King",
-                    "Jeff Hanneman",
-                    "Tom Araya",
-                    "Dave Lombardo"
-                ],
-                "correct": "Tom Araya"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "Which Slayer song is known for its intense speed and controversial lyrics about Josef Mengele?",
-                "answers": [
-                    "Angel of Death",
-                    "Raining Blood",
-                    "War Ensemble",
-                    "Disciple"
-                ],
-                "correct": "Angel of Death"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "What was the nickname of Slayer's guitarist, Jeff Hanneman, who passed away in 2013?",
-                "answers": [
-                    "The Ripper",
-                    "The Shredder",
-                    "The Master of Riffs",
-                    "The Evil One"
-                ],
-                "correct": "The Master of Riffs"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "Which Slayer album, released in 1990, features songs like \"War Ensemble\" and \"Dead Skin Mask\"?",
-                "answers": [
-                    "South of Heaven",
-                    "Seasons in the Abyss",
-                    "Divine Intervention",
-                    "God Hates Us All"
-                ],
-                "correct": "Seasons in the Abyss"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "What year did Slayer originally form?",
-                "answers": [
-                    "1981",
-                    "1983",
-                    "1985",
-                    "1987"
-                ],
-                "correct": "1981"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "Which Slayer song was often used as a closing track for their live shows?",
-                "answers": [
-                    "Raining Blood",
-                    "Angel of Death",
-                    "South of Heaven",
-                    "Disciple"
-                ],
-                "correct": "Raining Blood"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "What was the name of the record label that released most of Slayer's classic albums?",
-                "answers": [
-                    "Metal Blade Records",
-                    "Megaforce Records",
-                    "Def Jam Recordings",
-                    "American Recordings"
-                ],
-                "correct": "American Recordings"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "Who was the original drummer for Slayer, known for his fast and aggressive style?",
-                "answers": [
-                    "Paul Bostaph",
-                    "Jon Dette",
-                    "Dave Lombardo",
-                    "Gene Hoglan"
-                ],
-                "correct": "Dave Lombardo"
-            },
-            {
-                "Topic": "Slayer",
-                "Question": "Which Slayer album, released in 1988, marked a slight departure from their earlier speed, incorporating more melodic elements?",
-                "answers": [
-                    "Reign in Blood",
-                    "South of Heaven",
-                    "Seasons in the Abyss",
-                    "Divine Intervention"
-                ],
-                "correct": "South of Heaven"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "What was the title of Black Flag's debut studio album, released in 1981?",
-                "answers": [
-                    "Damaged",
-                    "My War",
-                    "Slip It In",
-                    "Loose Nut"
-                ],
-                "correct": "Damaged"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "Who was the iconic lead vocalist for Black Flag during their most well-known period?",
-                "answers": [
-                    "Keith Morris",
-                    "Ron Reyes",
-                    "Henry Rollins",
-                    "Dez Cadena"
-                ],
-                "correct": "Henry Rollins"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "Which Black Flag song features the lyric \"I'm a black flag, a black flag, a black flag\"?",
-                "answers": [
-                    "Nervous Breakdown",
-                    "Rise Above",
-                    "Gimme Gimme Gimme",
-                    "Six Pack"
-                ],
-                "correct": "Rise Above"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "What was the name of Black Flag's guitarist and primary songwriter?",
-                "answers": [
-                    "Chuck Dukowski",
-                    "Greg Ginn",
-                    "Bill Stevenson",
-                    "Kira Roessler"
-                ],
-                "correct": "Greg Ginn"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "Which Black Flag album, released in 1984, marked a shift towards a slower, heavier sound?",
-                "answers": [
-                    "Damaged",
-                    "My War",
-                    "Slip It In",
-                    "Loose Nut"
-                ],
-                "correct": "My War"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "What year did Black Flag originally form?",
-                "answers": [
-                    "1976",
-                    "1978",
-                    "1980",
-                    "1982"
-                ],
-                "correct": "1978"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "What was the name of the independent record label founded by Greg Ginn, which released Black Flag's music?",
-                "answers": [
-                    "SST Records",
-                    "Dischord Records",
-                    "Alternative Tentacles",
-                    "Epitaph Records"
-                ],
-                "correct": "SST Records"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "Who was the original vocalist for Black Flag, featured on their first EP \"Nervous Breakdown\"?",
-                "answers": [
-                    "Henry Rollins",
-                    "Ron Reyes",
-                    "Keith Morris",
-                    "Dez Cadena"
-                ],
-                "correct": "Keith Morris"
-            },
-            {
-                "Topic": "Black Flag",
-                "Question": "Which Black Flag album, released in 1985, is known for its jazz-influenced instrumental sections?",
-                "answers": [
-                    "My War",
-                    "Slip It In",
-                    "Family Man",
-                    "Loose Nut"
-                ],
-                "correct": "Family Man"
-            }
-        ];
+        let allQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
         let moshPitPoints = 0;
         let fiftyFiftyUsed = false;
         let askTheCrowdUsed = false;
         let gameQuestions = [];
+
         const questionTopicEl = document.getElementById('question-topic');
         const questionTextEl = document.getElementById('question-text');
         const answerGridEl = document.getElementById('answer-grid');
@@ -1130,10 +437,14 @@
         const usernameInputEl = document.getElementById('username-input');
         const usernameSubmitBtn = document.getElementById('username-submit');
         const usernameDisplayEl = document.getElementById('username-display');
+        
+        // Leaderboard elements
         const leaderboardEl = document.getElementById('leaderboard');
         const leaderboardListEl = document.getElementById('leaderboard-list');
+        
         let dbRef;
         let authReady = false;
+
         async function initFirebase() {
             try {
                 if (initialAuthToken) {
@@ -1145,6 +456,7 @@
                 console.error("Firebase Auth Error:", error);
             }
         }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userId = user.uid;
@@ -1153,13 +465,29 @@
                     usernamePromptEl.style.display = 'flex';
                 } else {
                     usernameDisplayEl.textContent = username;
-                    startGame();
+                    await loadQuestions();
                 }
                 dbRef = doc(db, `artifacts/${appId}/public/data/leaderboard/${userId}`);
                 authReady = true;
                 listenForLeaderboardUpdates();
             }
         });
+
+        // Function to fetch questions from the JSON file
+        async function loadQuestions() {
+            try {
+                const response = await fetch('questions.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                allQuestions = await response.json();
+                startGame();
+            } catch (e) {
+                console.error("Could not load questions.json:", e);
+                questionTextEl.textContent = "Error loading questions. Please check the file.";
+            }
+        }
+
         usernameSubmitBtn.onclick = () => {
             const inputUsername = usernameInputEl.value.trim();
             if (inputUsername) {
@@ -1167,21 +495,25 @@
                 localStorage.setItem('username', username);
                 usernamePromptEl.style.display = 'none';
                 usernameDisplayEl.textContent = username;
-                startGame();
+                loadQuestions();
             }
         };
+
         function updateCurrencyDisplay() {
             moshPitPointsCountEl.textContent = moshPitPoints;
         }
+
         function showMessage(title, content, buttonText = "Play Again") {
             messageTitleEl.textContent = title;
             messageContentEl.textContent = content;
             messageButtonEl.textContent = buttonText;
             messageBoxEl.style.display = 'block';
         }
+
         function hideMessage() {
             messageBoxEl.style.display = 'none';
         }
+
         function loadQuestion() {
             if (currentQuestionIndex >= gameQuestions.length) {
                 if (score === gameQuestions.length) {
@@ -1191,11 +523,14 @@
                 }
                 return;
             }
+
             const currentQuestion = gameQuestions[currentQuestionIndex];
             questionTopicEl.textContent = currentQuestion.Topic;
             questionTextEl.textContent = currentQuestion.Question;
             answerGridEl.innerHTML = '';
+
             const shuffledAnswers = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
+
             shuffledAnswers.forEach(answer => {
                 const button = document.createElement('button');
                 button.textContent = answer;
@@ -1204,12 +539,14 @@
                 answerGridEl.appendChild(button);
             });
         }
+
         function checkAnswer(selectedAnswer, correctAnswer, button) {
             disableAllButtons();
+            
             if (selectedAnswer === correctAnswer) {
                 button.classList.add('correct-answer');
                 score++;
-                moshPitPoints++;
+                moshPitPoints++; // Earn one point for each correct answer
                 updateCurrencyDisplay();
                 setTimeout(nextQuestion, 1000);
             } else {
@@ -1221,27 +558,32 @@
                 }, 1500);
             }
         }
+
         function disableAllButtons() {
             Array.from(answerGridEl.children).forEach(button => {
                 button.disabled = true;
                 button.classList.add('cursor-not-allowed', 'opacity-50');
             });
         }
+
         function nextQuestion() {
             currentQuestionIndex++;
             loadQuestion();
         }
+
         async function endGame() {
             const finalScoreMessage = `You answered ${score} out of ${gameQuestions.length} questions correctly. You earned a total of ${moshPitPoints} Mosh Pit Points!`;
             showMessage("Game Over!", finalScoreMessage, "Play Again");
             leaderboardEl.style.display = 'block';
             await saveScore();
         }
+
         async function saveScore() {
             if (!authReady || !userId) {
                 console.error("Firebase not ready or user not authenticated.");
                 return;
             }
+
             try {
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(dbRef);
@@ -1263,6 +605,7 @@
                 console.error("Error saving score:", e);
             }
         }
+
         function listenForLeaderboardUpdates() {
             const leaderboardQuery = query(collection(db, `artifacts/${appId}/public/data/leaderboard`), orderBy("moshPitPoints", "desc"), limit(10));
             onSnapshot(leaderboardQuery, (querySnapshot) => {
@@ -1275,6 +618,7 @@
                 });
             });
         }
+
         function startNextRound() {
             moshPitPoints += 5;
             currentQuestionIndex = 0;
@@ -1284,6 +628,7 @@
             allQuestions.sort(() => Math.random() - 0.5);
             gameQuestions = allQuestions.slice(0, 11);
         }
+        
         messageButtonEl.onclick = () => {
             if (messageButtonEl.textContent === "Continue") {
                 hideMessage();
@@ -1292,6 +637,7 @@
                 resetGame();
             }
         };
+
         function resetGame() {
             currentQuestionIndex = 0;
             score = 0;
@@ -1307,18 +653,23 @@
             gameQuestions = allQuestions.slice(0, 11);
             loadQuestion();
         }
+
         function startGame() {
             allQuestions.sort(() => Math.random() - 0.5);
             gameQuestions = allQuestions.slice(0, 11);
             loadQuestion();
         }
+
+        // Lifeline Logic
         fiftyFiftyLifelineEl.onclick = () => {
             if (fiftyFiftyUsed) return;
             fiftyFiftyUsed = true;
             fiftyFiftyLifelineEl.classList.add('used');
+
             const currentQuestion = gameQuestions[currentQuestionIndex];
             const incorrectAnswers = currentQuestion.answers.filter(ans => ans !== currentQuestion.correct);
             const answersToRemove = [...incorrectAnswers].sort(() => Math.random() - 0.5).slice(0, 2);
+
             Array.from(answerGridEl.children).forEach(button => {
                 if (answersToRemove.includes(button.textContent)) {
                     button.classList.add('opacity-10', 'cursor-not-allowed');
@@ -1326,12 +677,15 @@
                 }
             });
         };
+
         askTheCrowdLifelineEl.onclick = () => {
             if (askTheCrowdUsed) return;
             askTheCrowdUsed = true;
             askTheCrowdLifelineEl.classList.add('used');
+
             const currentQuestion = gameQuestions[currentQuestionIndex];
             const correctBtn = Array.from(answerGridEl.children).find(btn => btn.textContent === currentQuestion.correct);
+            
             const rand = Math.random();
             if (rand < 0.7) {
                 correctBtn.style.borderColor = '#10B981';
@@ -1343,6 +697,7 @@
                 randomIncorrectBtn.style.backgroundColor = '#2b2b2b';
             }
         };
+
         window.onload = async () => {
             await initFirebase();
         };
