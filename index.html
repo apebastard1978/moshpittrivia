@@ -368,21 +368,21 @@
 
         <!-- Main Question -->
         <div class="question-box">
-            <span id="question-topic" class="question-topic">Laddar ämne...</span>
-            <p id="question-text" class="question-text">Laddar fråga...</p>
+            <span id="question-topic" class="question-topic">Loading Topic...</span>
+            <p id="question-text" class="question-text">Loading question...</p>
         </div>
 
         <!-- Answer Options -->
         <div id="answer-grid" class="answer-grid">
-            <button class="answer-button">Svar 1</button>
-            <button class="answer-button">Svar 2</button>
-            <button class="answer-button">Svar 3</button>
-            <button class="answer-button">Svar 4</button>
+            <button class="answer-button">Answer 1</button>
+            <button class="answer-button">Answer 2</button>
+            <button class="answer-button">Answer 3</button>
+            <button class="answer-button">Answer 4</button>
         </div>
 
         <!-- Leaderboard -->
         <div id="leaderboard">
-            <h3>Toppspelare</h3>
+            <h3>Top Players</h3>
             <ol id="leaderboard-list"></ol>
         </div>
     </div>
@@ -391,14 +391,14 @@
     <div id="message-box" class="message-box">
         <h2 id="message-title"></h2>
         <p id="message-content"></p>
-        <button id="message-button">Spela igen</button>
+        <button id="message-button">Play Again</button>
     </div>
 
     <!-- Username Input Prompt -->
     <div id="username-prompt" style="display: none;">
-        <h2 class="text-xl font-bold">Välj ett användarnamn</h2>
-        <input type="text" id="username-input" placeholder="Ange ditt namn" maxlength="20">
-        <button id="username-submit" class="bg-red-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-800 transition">Starta spel</button>
+        <h2 class="text-xl font-bold">Choose a Username</h2>
+        <input type="text" id="username-input" placeholder="Enter your name" maxlength="20">
+        <button id="username-submit" class="bg-red-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-800 transition">Start Game</button>
     </div>
 
     <script type="module">
@@ -485,7 +485,7 @@
                 startGame();
             } catch (e) {
                 console.error("Could not load questions.json:", e);
-                questionTextEl.textContent = "Fel vid laddning av frågor. Kontrollera filen.";
+                questionTextEl.textContent = "Error loading questions. Please check the file.";
             }
         }
 
@@ -504,7 +504,7 @@
             moshPitPointsCountEl.textContent = moshPitPoints;
         }
 
-        function showMessage(title, content, buttonText = "Spela igen") {
+        function showMessage(title, content, buttonText = "Play Again") {
             messageTitleEl.textContent = title;
             messageContentEl.textContent = content;
             messageButtonEl.textContent = buttonText;
@@ -527,8 +527,8 @@
 
             const currentQuestion = gameQuestions[currentQuestionIndex];
             // Fix: Corrected property names to match questions.json
-            questionTopicEl.textContent = currentQuestion.Topic;
-            questionTextEl.textContent = currentQuestion.Question;
+            questionTopicEl.textContent = currentQuestion.topic;
+            questionTextEl.textContent = currentQuestion.question;
             answerGridEl.innerHTML = '';
 
             const shuffledAnswers = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
@@ -574,8 +574,8 @@
         }
 
         async function endGame() {
-            const finalScoreMessage = `Du svarade rätt på ${score} av ${gameQuestions.length} frågor. Du tjänade totalt ${moshPitPoints} Mosh Pit Points!`;
-            showMessage("Spel slut!", finalScoreMessage, "Spela igen");
+            const finalScoreMessage = `You answered ${score} out of ${gameQuestions.length} questions correctly. You earned a total of ${moshPitPoints} Mosh Pit Points!`;
+            showMessage("Game Over!", finalScoreMessage, "Play Again");
             leaderboardEl.style.display = 'block';
             await saveScore();
         }
@@ -602,9 +602,9 @@
                         });
                     }
                 });
-                console.log("Poäng sparade på topplistan.");
+                console.log("Score saved to leaderboard.");
             } catch (e) {
-                console.error("Fel vid sparning av poäng:", e);
+                console.error("Error saving score:", e);
             }
         }
 
@@ -626,13 +626,13 @@
             currentQuestionIndex = 0;
             score = 0;
             updateCurrencyDisplay();
-            showMessage("Perfekt runda!", `Du svarade rätt på alla 11 frågor och fick 5 Mosh Pit Points! Dina totala poäng: ${moshPitPoints}.`, "Fortsätt");
+            showMessage("Perfect Round!", `You answered all 11 questions correctly and earned 5 Mosh Pit Points! Your total points: ${moshPitPoints}.`, "Continue");
             allQuestions.sort(() => Math.random() - 0.5);
             gameQuestions = allQuestions.slice(0, 11);
         }
         
         messageButtonEl.onclick = () => {
-            if (messageButtonEl.textContent === "Fortsätt") {
+            if (messageButtonEl.textContent === "Continue") {
                 hideMessage();
                 loadQuestion();
             } else {
