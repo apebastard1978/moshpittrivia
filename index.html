@@ -450,7 +450,7 @@
             // Only fetch if the questions haven't been loaded yet
             if (allQuestions.length === 0) { 
                 try {
-                    const response = await fetch('questions.json');
+                    const response = await fetch('./questions.json');
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
@@ -485,13 +485,14 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userId = user.uid;
+                await loadAllQuestions(); // Load questions as soon as user is authenticated.
+
                 username = localStorage.getItem('username');
                 if (!username) {
                     usernamePromptEl.style.display = 'flex';
                 } else {
                     usernameDisplayEl.textContent = username;
-                    await loadAllQuestions();
-                    startGame();
+                    startGame(); // Questions are loaded, so start the game.
                 }
                 dbRef = doc(db, `artifacts/${appId}/public/data/leaderboard/${userId}`);
                 authReady = true;
@@ -499,15 +500,14 @@
             }
         });
 
-        usernameSubmitBtn.onclick = async () => {
+        usernameSubmitBtn.onclick = () => {
             const inputUsername = usernameInputEl.value.trim();
             if (inputUsername) {
                 username = inputUsername;
                 localStorage.setItem('username', username);
                 usernamePromptEl.style.display = 'none';
                 usernameDisplayEl.textContent = username;
-                await loadAllQuestions();
-                startGame();
+                startGame(); // Questions are already loaded, just start the game.
             }
         };
 
@@ -668,7 +668,8 @@
 
         function startGame() {
             if (allQuestions.length === 0) {
-                questionTextEl.textContent = "Still loading questions...";
+                questionTextEl.textContent = "Error: No questions were loaded. Please try refreshing the page.";
+                answerGridEl.innerHTML = '';
                 return;
             }
             allQuestions.sort(() => Math.random() - 0.5);
@@ -720,3 +721,4 @@
     </script>
 </body>
 </html>
+
