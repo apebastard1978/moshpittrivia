@@ -415,13 +415,14 @@
         const auth = getAuth(app);
         let userId = '';
         let username = '';
+
         let allQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
         let moshPitPoints = 0;
         let fiftyFiftyUsed = false;
         let askTheCrowdUsed = false;
-        let gameQuestions = [];
+        let gameQuestions = []; // New array to hold the 11 questions for the current game
 
         const questionTopicEl = document.getElementById('question-topic');
         const questionTextEl = document.getElementById('question-text');
@@ -445,6 +446,30 @@
         let dbRef;
         let authReady = false;
 
+        async function loadAllQuestions() {
+            // Only fetch if the questions haven't been loaded yet
+            if (allQuestions.length === 0) { 
+                try {
+                    const response = await fetch('questions.json');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    // The JSON file has a different structure, so we need to map it
+                    const data = await response.json();
+                    allQuestions = data.map(q => ({
+                        question: q.Question,
+                        answers: q.answers,
+                        correct: q.correct,
+                        topic: q.Topic
+                    }));
+                } catch (error) {
+                    console.error("Could not fetch questions:", error);
+                    // Display an error to the user
+                    questionTextEl.textContent = "Failed to load questions. Please check the console and refresh.";
+                }
+            }
+        }
+
         async function initFirebase() {
             try {
                 if (initialAuthToken) {
@@ -465,7 +490,8 @@
                     usernamePromptEl.style.display = 'flex';
                 } else {
                     usernameDisplayEl.textContent = username;
-                    await loadQuestions();
+                    await loadAllQuestions();
+                    startGame();
                 }
                 dbRef = doc(db, `artifacts/${appId}/public/data/leaderboard/${userId}`);
                 authReady = true;
@@ -473,30 +499,15 @@
             }
         });
 
-        // Function to fetch questions from the JSON file
-        async function loadQuestions() {
-            try {
-                // Corrected file path to questions.json
-                const response = await fetch('questions.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                allQuestions = await response.json();
-                startGame();
-            } catch (e) {
-                console.error("Could not load questions.json:", e);
-                questionTextEl.textContent = "Error loading questions. Please check the file.";
-            }
-        }
-
-        usernameSubmitBtn.onclick = () => {
+        usernameSubmitBtn.onclick = async () => {
             const inputUsername = usernameInputEl.value.trim();
             if (inputUsername) {
                 username = inputUsername;
                 localStorage.setItem('username', username);
                 usernamePromptEl.style.display = 'none';
                 usernameDisplayEl.textContent = username;
-                loadQuestions();
+                await loadAllQuestions();
+                startGame();
             }
         };
 
@@ -526,7 +537,6 @@
             }
 
             const currentQuestion = gameQuestions[currentQuestionIndex];
-            // Fix: Corrected property names to match questions.json
             questionTopicEl.textContent = currentQuestion.topic;
             questionTextEl.textContent = currentQuestion.question;
             answerGridEl.innerHTML = '';
@@ -627,13 +637,13 @@
             score = 0;
             updateCurrencyDisplay();
             showMessage("Perfect Round!", `You answered all 11 questions correctly and earned 5 Mosh Pit Points! Your total points: ${moshPitPoints}.`, "Continue");
-            allQuestions.sort(() => Math.random() - 0.5);
-            gameQuestions = allQuestions.slice(0, 11);
         }
         
         messageButtonEl.onclick = () => {
             if (messageButtonEl.textContent === "Continue") {
                 hideMessage();
+                allQuestions.sort(() => Math.random() - 0.5);
+                gameQuestions = allQuestions.slice(0, 11);
                 loadQuestion();
             } else {
                 resetGame();
@@ -657,6 +667,10 @@
         }
 
         function startGame() {
+            if (allQuestions.length === 0) {
+                questionTextEl.textContent = "Still loading questions...";
+                return;
+            }
             allQuestions.sort(() => Math.random() - 0.5);
             gameQuestions = allQuestions.slice(0, 11);
             loadQuestion();
@@ -664,7 +678,7 @@
 
         // Lifeline Logic
         fiftyFiftyLifelineEl.onclick = () => {
-            if (fiftyFiftyUsed) return;
+            if (fiftyFiftyUsed || currentQuestionIndex >= gameQuestions.length) return;
             fiftyFiftyUsed = true;
             fiftyFiftyLifelineEl.classList.add('used');
 
@@ -681,7 +695,7 @@
         };
 
         askTheCrowdLifelineEl.onclick = () => {
-            if (askTheCrowdUsed) return;
+            if (askTheCrowdUsed || currentQuestionIndex >= gameQuestions.length) return;
             askTheCrowdUsed = true;
             askTheCrowdLifelineEl.classList.add('used');
 
