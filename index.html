@@ -347,9 +347,6 @@
                 <div id="50-50" class="lifeline" title="50/50">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 4.5l-4 4h8l-4-4z" transform="rotate(45 12 12)"/></svg>
                 </div>
-                <div id="ask-the-crowd" class="lifeline" title="Ask the Crowd">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0zm-4-3a1 1 0 0 0-1 1v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-1-1zM5 20v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2H5zm14-2a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v2h6v-2zM3 18a2 2 0 0 0 2 2h2v-2H5a2 2 0 0 0-2 2z"/></svg>
-                </div>
             </div>
         </div>
         
@@ -422,7 +419,6 @@
         let score = 0;
         let moshPitPoints = 0;
         let fiftyFiftyUsed = false;
-        let askTheCrowdUsed = false;
         let questionTimer;
         let timeLeft = 10;
         
@@ -441,7 +437,6 @@
         const answerGridEl = document.getElementById('answer-grid');
         const moshPitPointsCountEl = document.getElementById('mosh-pit-points-count');
         const fiftyFiftyLifelineEl = document.getElementById('50-50');
-        const askTheCrowdLifelineEl = document.getElementById('ask-the-crowd');
         const buyTimeLifelineEl = document.getElementById('buy-time');
         const usernameInputEl = document.getElementById('username-input');
         const usernameConfirmButtonEl = document.getElementById('username-confirm-button');
@@ -520,9 +515,7 @@
             currentQuestionIndex = 0;
             score = 0;
             fiftyFiftyLifelineEl.classList.remove('used');
-            askTheCrowdLifelineEl.classList.remove('used');
             fiftyFiftyUsed = false;
-            askTheCrowdUsed = false;
 
             questionTopicEl.textContent = "LOADING...";
             questionTextEl.textContent = "Getting the next setlist...";
@@ -695,23 +688,6 @@
                 if (answersToRemove.includes(button.textContent)) {
                     button.classList.add('opacity-10', 'cursor-not-allowed');
                     button.disabled = true;
-                }
-            });
-        };
-
-        askTheCrowdLifelineEl.onclick = () => {
-            if (askTheCrowdUsed || currentQuestionIndex >= gameQuestions.length) return;
-            askTheCrowdUsed = true;
-            askTheCrowdLifelineEl.classList.add('used');
-
-            const currentQuestion = gameQuestions[currentQuestionIndex];
-            Array.from(answerGridEl.children).forEach(button => {
-                let chance = 0.1;
-                if (button.textContent === currentQuestion.correct) {
-                    chance = 0.75;
-                }
-                if (Math.random() < chance) {
-                     button.style.boxShadow = '0 0 15px #10B981';
                 }
             });
         };
