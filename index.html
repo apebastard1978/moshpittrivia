@@ -156,9 +156,11 @@
             border: 2px solid transparent;
         }
         
-        .answer-button:hover:not(:disabled) {
-            background-color: #333333;
-            box-shadow: 0 0 10px white;
+        @media (hover: hover) {
+            .answer-button:hover:not(:disabled) {
+                background-color: #333333;
+                box-shadow: 0 0 10px white;
+            }
         }
         
         .answer-button:active:not(:disabled) {
@@ -826,4 +828,5 @@
     </script>
 </body>
 </html>
+
 
