@@ -30,7 +30,7 @@
             z-index: -1;
         }
 
-        .trivia-container, #start-screen, #end-of-round-screen {
+        .trivia-container, #start-screen, #end-of-round-screen, #help-modal {
             max-width: 768px;
             width: 100%;
             background-color: rgba(0, 0, 0, 0.85);
@@ -44,11 +44,19 @@
             max-height: 95vh;
         }
 
-        #start-screen {
+        #start-screen, #help-modal {
              display: flex;
             flex-direction: column;
             gap: 1rem;
             text-align: center;
+        }
+
+        #help-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
         }
         
         .header {
@@ -286,6 +294,17 @@
             background-color: #374151;
         }
 
+        .lifeline-definition {
+            display: flex;
+            gap: 1rem;
+            text-align: left;
+            padding: 1rem 0;
+            border-bottom: 1px solid #333333;
+        }
+         .lifeline-definition:last-child {
+            border-bottom: none;
+        }
+
 
         @keyframes pulse-red {
             0% { transform: scale(1); color: #DC2626; }
@@ -346,8 +365,13 @@
                         <path d="M18 12.75a.75.75 0 000-1.5h-1.5v-1.5a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5z" />
                     </svg>
                 </div>
-                <div id="50-50" class="lifeline" title="50/50">
+                <div id="50-50" class="lifeline" title="50/50 (Costs 10 MPP)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 4.5l-4 4h8l-4-4z" transform="rotate(45 12 12)"/></svg>
+                </div>
+                 <div id="help-lifeline" class="lifeline" title="Help">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm11.378-3.917c-.89-.777-2.466-.777-3.356 0a.75.75 0 01-1.06-1.06 4.125 4.125 0 015.472 0 .75.75 0 01-1.06 1.06zM10.5 11.25a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5zM12 15.75a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75v-.008z" clip-rule="evenodd" />
+                    </svg>
                 </div>
             </div>
         </div>
@@ -360,8 +384,8 @@
         <!-- Question -->
         <div class="question-box">
             <div id="timer-display" class="text-2xl font-bold text-red-600 mb-4">10</div>
-            <img id="question-image" src="" alt="Trivia Image" class="mb-4 rounded-lg hidden w-full h-auto" style="max-height: 256px; object-fit: contain;">
             <span id="question-topic" class="question-topic">LOADING TRIVIA</span>
+            <img id="question-image" src="" alt="Trivia Image" class="mb-4 rounded-lg hidden w-full h-auto" style="max-height: 256px; object-fit: contain;">
             <p id="question-text" class="question-text">Getting the show on the road...</p>
         </div>
 
@@ -383,6 +407,38 @@
             <button id="continue-button" class="game-button">Continue to Next Round</button>
             <button id="quit-button" class="game-button quit-button">Quit</button>
         </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" style="display: none;">
+        <h2 class="text-3xl font-bold text-red-600 mb-4">Lifelines</h2>
+        
+        <div class="lifeline-definition">
+            <div class="lifeline flex-shrink-0">
+                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
+                    <path d="M18 12.75a.75.75 0 000-1.5h-1.5v-1.5a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold">Buy Time</h3>
+                <p class="text-sm text-gray-400">Costs 5 Mosh Pit Points</p>
+                <p>Adds 5 seconds to the timer for the current question.</p>
+            </div>
+        </div>
+
+        <div class="lifeline-definition">
+            <div class="lifeline flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 4.5l-4 4h8l-4-4z" transform="rotate(45 12 12)"/></svg>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold">50/50</h3>
+                <p class="text-sm text-gray-400">Costs 10 Mosh Pit Points</p>
+                <p>Removes two incorrect answers, leaving you with a 50/50 chance. Can be used multiple times per round.</p>
+            </div>
+        </div>
+
+        <button id="close-help-button" class="game-button">Got It</button>
     </div>
 
 
@@ -420,7 +476,7 @@
         let currentQuestionIndex = 0;
         let score = 0;
         let moshPitPoints = 0;
-        let fiftyFiftyUsed = false;
+        let fiftyFiftyUsedThisQuestion = false;
         let questionTimer;
         let timeLeft = 10;
         
@@ -440,6 +496,9 @@
         const moshPitPointsCountEl = document.getElementById('mosh-pit-points-count');
         const fiftyFiftyLifelineEl = document.getElementById('50-50');
         const buyTimeLifelineEl = document.getElementById('buy-time');
+        const helpLifelineEl = document.getElementById('help-lifeline');
+        const helpModalEl = document.getElementById('help-modal');
+        const closeHelpButtonEl = document.getElementById('close-help-button');
         const usernameInputEl = document.getElementById('username-input');
         const usernameConfirmButtonEl = document.getElementById('username-confirm-button');
         const usernameDisplayEl = document.getElementById('username-display');
@@ -516,8 +575,6 @@
 
             currentQuestionIndex = 0;
             score = 0;
-            fiftyFiftyLifelineEl.classList.remove('used');
-            fiftyFiftyUsed = false;
 
             questionTopicEl.textContent = "LOADING...";
             questionTextEl.textContent = "Getting the next setlist...";
@@ -526,17 +583,29 @@
             let roundIds = [];
             const textIdsForRound = shuffledTextQuestionIds.slice(shuffledTextIndex, shuffledTextIndex + 9);
             shuffledTextIndex += 9;
+            
             const pictureIdForRound = shuffledPictureQuestionIds[shuffledPictureIndex];
             shuffledPictureIndex++;
-            roundIds = [...textIdsForRound, pictureIdForRound];
+
+            roundIds = [...textIdsForRound, pictureIdForRound].filter(Boolean);
 
             gameQuestions = await fetchQuestionsByIds(roundIds);
             
+            // Ensure picture question is last
             gameQuestions.sort((a, b) => (a.imageUrl ? 1 : 0) - (b.imageUrl ? 1 : 0));
+
+            // Preload the image for the final question of the round
+            if (gameQuestions.length > 0) {
+                const pictureQuestion = gameQuestions[gameQuestions.length - 1];
+                if (pictureQuestion && pictureQuestion.imageUrl) {
+                    const preloader = new Image();
+                    preloader.src = pictureQuestion.imageUrl;
+                }
+            }
 
             if(gameQuestions.length === 0){
                  if (textQuestionIds.length < 9 || pictureQuestionIds.length < 1) {
-                    questionTextEl.textContent = "Not enough questions in the database to start a round. Please upload at least 9 text questions and 1 picture question.";
+                    questionTextEl.textContent = "Not enough questions in the database. Please upload at least 9 text questions and 1 picture question.";
                 } else {
                     questionTextEl.textContent = "Failed to load questions from the database. Please try again.";
                 }
@@ -567,6 +636,7 @@
                 return;
             }
             updateProgressBar();
+            fiftyFiftyUsedThisQuestion = false;
 
             const currentQuestion = gameQuestions[currentQuestionIndex];
             
@@ -594,7 +664,7 @@
             clearInterval(questionTimer);
             timeLeft = 10;
             updateTimerDisplay();
-            updateCurrencyDisplay(); // This will correctly set the initial state of the buy time button
+            updateCurrencyDisplay(); 
             startTimer();
         }
 
@@ -670,26 +740,39 @@
 
         function updateCurrencyDisplay() {
             moshPitPointsCountEl.textContent = moshPitPoints;
-            if (moshPitPoints >= 5) {
+            const firstAnswerButton = answerGridEl.querySelector('button');
+            const questionInProgress = firstAnswerButton && !firstAnswerButton.disabled;
+
+            if (moshPitPoints >= 5 && questionInProgress) {
                 buyTimeLifelineEl.classList.remove('used');
             } else {
                 buyTimeLifelineEl.classList.add('used');
             }
+            if (moshPitPoints >= 10 && !fiftyFiftyUsedThisQuestion && questionInProgress) {
+                fiftyFiftyLifelineEl.classList.remove('used');
+            } else {
+                fiftyFiftyLifelineEl.classList.add('used');
+            }
         }
 
         fiftyFiftyLifelineEl.onclick = () => {
-            if (fiftyFiftyUsed || currentQuestionIndex >= gameQuestions.length) return;
-            fiftyFiftyUsed = true;
-            fiftyFiftyLifelineEl.classList.add('used');
-
+            const firstAnswerButton = answerGridEl.querySelector('button');
+            if (fiftyFiftyUsedThisQuestion || moshPitPoints < 10 || !firstAnswerButton || firstAnswerButton.disabled) return;
+            
+            moshPitPoints -= 10;
+            fiftyFiftyUsedThisQuestion = true; // Can only be used once per question now
+            updateCurrencyDisplay();
+            
             const currentQuestion = gameQuestions[currentQuestionIndex];
             const incorrectAnswers = currentQuestion.answers.filter(ans => ans !== currentQuestion.correct);
             const answersToRemove = [...incorrectAnswers].sort(() => Math.random() - 0.5).slice(0, 2);
 
+            let removedCount = 0;
             Array.from(answerGridEl.children).forEach(button => {
-                if (answersToRemove.includes(button.textContent)) {
+                if (answersToRemove.includes(button.textContent) && removedCount < 2) {
                     button.classList.add('opacity-10', 'cursor-not-allowed');
                     button.disabled = true;
+                    removedCount++;
                 }
             });
         };
@@ -784,8 +867,17 @@
                 }
                 await fetchAndCategorizeQuestions();
                 
-                usernameConfirmButtonEl.disabled = false;
-                usernameConfirmButtonEl.textContent = 'Start Game';
+                if (textQuestionIds.length < 9 || pictureQuestionIds.length < 1) {
+                     startScreenEl.innerHTML = `
+                        <h1 class="text-3xl font-bold text-red-500 mb-4">Not Enough Questions</h1>
+                        <p>Please use the uploader tool to add more questions to the database.</p>
+                        <p class="mt-2">You need at least <strong>9 text questions</strong> and <strong>1 picture question</strong> to play.</p>
+                     `;
+                } else {
+                    usernameConfirmButtonEl.disabled = false;
+                    usernameConfirmButtonEl.textContent = 'Start Game';
+                }
+                
                 listenForLeaderboardUpdates();
             }
         });
@@ -824,6 +916,14 @@
         quitButtonEl.onclick = () => {
             resetGame();
         };
+
+        helpLifelineEl.onclick = () => {
+            helpModalEl.style.display = 'flex';
+        }
+
+        closeHelpButtonEl.onclick = () => {
+            helpModalEl.style.display = 'none';
+        }
 
     </script>
 </body>
