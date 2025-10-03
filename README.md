@@ -5,11 +5,11 @@ Welcome to Mosh Pit Trivia, the ultimate challenge for fans of rock, punk, and m
 How to Play
 Enter your username to start a new game.
 
-Answer 11 random questions about rock, punk, and metal bands and history.
+Answer 10 random questions about rock, punk, and metal bands and history.
 
 Each correct answer earns you 1 Mosh Pit Point.
 
-Answer all 11 questions correctly to get a 5 Mosh Pit Point bonus and continue your streak!
+Answer all 10 questions correctly to get a 5 Mosh Pit Point bonus and continue your streak!
 
 If you get a question wrong, the game ends, and your score is added to the global leaderboard.
 

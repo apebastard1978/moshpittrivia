@@ -8,13 +8,22 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
         body { font-family: 'Special Elite', monospace; }
-        input[type="text"], select {
+        input[type="text"], select, textarea {
             background-color: #1a1a1a;
             border: 1px solid #333333;
             border-radius: 0.5rem;
             padding: 0.5rem 1rem;
             color: #FFFFFF;
             width: 100%;
+        }
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active {
+            border-bottom-color: #B91C1C;
+            color: #B91C1C;
         }
     </style>
 </head>
@@ -23,65 +32,95 @@
     <div class="w-full max-w-2xl bg-gray-900 border-2 border-gray-700 rounded-lg p-6 shadow-lg">
         <h1 class="text-3xl font-bold text-red-600 mb-4 text-center">Question Uploader</h1>
         
-        <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
-            <p class="text-gray-300">Fill out the form below to add a new question directly to your Firestore database. For picture questions, add a direct image link to the URL field.</p>
+        <div class="flex border-b border-gray-700 mb-6">
+            <div id="manual-tab" class="tab active">Manual Entry</div>
+            <div id="ai-tab" class="tab">AI Generator</div>
         </div>
-        
-        <form id="question-form" class="space-y-4">
-            <div>
-                <label for="category" class="block mb-2 text-sm font-medium text-gray-300">Category</label>
-                <select id="category" name="category">
-                    <option value="bulk">Bulk Question</option>
-                    <option value="curated">Curated Question</option>
-                    <option value="picture">Picture Question</option>
-                </select>
-            </div>
-            <div>
-                <label for="topic" class="block mb-2 text-sm font-medium text-gray-300">Topic</label>
-                <input type="text" id="topic" name="topic" placeholder="e.g., Band Recognition" required>
-            </div>
-            <div>
-                <label for="question" class="block mb-2 text-sm font-medium text-gray-300">Question Text</label>
-                <input type="text" id="question" name="question" placeholder="e.g., Which band is this?" required>
-            </div>
-             <div>
-                <label for="imageUrl" class="block mb-2 text-sm font-medium text-gray-300">Image URL (Optional)</label>
-                <input type="text" id="imageUrl" name="imageUrl" placeholder="https://i.imgur.com/your-image.jpg">
+
+        <!-- Manual Uploader Tab -->
+        <div id="manual-uploader">
+            <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
+                <p class="text-gray-300">Fill out the form below to add a custom question directly to your Firestore database.</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form id="question-form" class="space-y-4">
                 <div>
-                    <label for="answer-a" class="block mb-2 text-sm font-medium text-gray-300">Answer A</label>
-                    <input type="text" id="answer-a" name="answer-a" required>
+                    <label for="category" class="block mb-2 text-sm font-medium text-gray-300">Category</label>
+                    <select id="category" name="category">
+                        <option value="bulk">Bulk Question</option>
+                        <option value="curated">Curated Question</option>
+                        <option value="picture">Picture Question</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="topic" class="block mb-2 text-sm font-medium text-gray-300">Topic</label>
+                    <input type="text" id="topic" name="topic" placeholder="e.g., Band Recognition" required>
+                </div>
+                <div>
+                    <label for="question" class="block mb-2 text-sm font-medium text-gray-300">Question Text</label>
+                    <input type="text" id="question" name="question" placeholder="e.g., Which band is this?" required>
                 </div>
                  <div>
-                    <label for="answer-b" class="block mb-2 text-sm font-medium text-gray-300">Answer B</label>
-                    <input type="text" id="answer-b" name="answer-b" required>
+                    <label for="imageUrl" class="block mb-2 text-sm font-medium text-gray-300">Image URL (Optional)</label>
+                    <input type="text" id="imageUrl" name="imageUrl" placeholder="https://i.imgur.com/your-image.jpg">
                 </div>
-                 <div>
-                    <label for="answer-c" class="block mb-2 text-sm font-medium text-gray-300">Answer C</label>
-                    <input type="text" id="answer-c" name="answer-c" required>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="answer-a" class="block mb-2 text-sm font-medium text-gray-300">Answer A</label>
+                        <input type="text" id="answer-a" name="answer-a" required>
+                    </div>
+                     <div>
+                        <label for="answer-b" class="block mb-2 text-sm font-medium text-gray-300">Answer B</label>
+                        <input type="text" id="answer-b" name="answer-b" required>
+                    </div>
+                     <div>
+                        <label for="answer-c" class="block mb-2 text-sm font-medium text-gray-300">Answer C</label>
+                        <input type="text" id="answer-c" name="answer-c" required>
+                    </div>
+                     <div>
+                        <label for="answer-d" class="block mb-2 text-sm font-medium text-gray-300">Answer D</label>
+                        <input type="text" id="answer-d" name="answer-d" required>
+                    </div>
                 </div>
-                 <div>
-                    <label for="answer-d" class="block mb-2 text-sm font-medium text-gray-300">Answer D</label>
-                    <input type="text" id="answer-d" name="answer-d" required>
-                </div>
-            </div>
 
-            <div>
-                <label class="block mb-2 text-sm font-medium text-gray-300">Correct Answer</label>
-                <div class="flex items-center gap-x-6 gap-y-2 flex-wrap">
-                    <div class="flex items-center"><input id="correct-a" name="correct-answer" type="radio" value="A" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500" checked><label for="correct-a" class="ml-2">A</label></div>
-                    <div class="flex items-center"><input id="correct-b" name="correct-answer" type="radio" value="B" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-b" class="ml-2">B</label></div>
-                    <div class="flex items-center"><input id="correct-c" name="correct-answer" type="radio" value="C" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-c" class="ml-2">C</label></div>
-                    <div class="flex items-center"><input id="correct-d" name="correct-answer" type="radio" value="D" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-d" class="ml-2">D</label></div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-300">Correct Answer</label>
+                    <div class="flex items-center gap-x-6 gap-y-2 flex-wrap">
+                        <div class="flex items-center"><input id="correct-a" name="correct-answer" type="radio" value="A" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500" checked><label for="correct-a" class="ml-2">A</label></div>
+                        <div class="flex items-center"><input id="correct-b" name="correct-answer" type="radio" value="B" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-b" class="ml-2">B</label></div>
+                        <div class="flex items-center"><input id="correct-c" name="correct-answer" type="radio" value="C" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-c" class="ml-2">C</label></div>
+                        <div class="flex items-center"><input id="correct-d" name="correct-answer" type="radio" value="D" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-d" class="ml-2">D</label></div>
+                    </div>
                 </div>
-            </div>
 
-            <button id="upload-button" type="submit" class="mt-4 w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Add Question to Database</button>
-        </form>
+                <button id="upload-button" type="submit" class="mt-4 w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Add Question to Database</button>
+            </form>
+            <div id="status-message" class="mt-4 text-center"></div>
+        </div>
         
-        <div id="status-message" class="mt-4 text-center"></div>
+        <!-- AI Generator Tab -->
+        <div id="ai-uploader" style="display: none;">
+             <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
+                <p class="text-gray-300">Select a question type, enter the facts, and let AI generate the rest.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="ai-question-type" class="block mb-2 text-sm font-medium text-gray-300">Question Type</label>
+                    <select id="ai-question-type">
+                        <option value="album-year">Album Release Year</option>
+                        <option value="song-lyric">Song from Lyric</option>
+                        <option value="song-album">Song on Album</option>
+                    </select>
+                </div>
+                <div id="ai-inputs">
+                    <!-- Inputs will be dynamically added here -->
+                </div>
+                <button id="generate-button" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Generate Question</button>
+            </div>
+             <div id="ai-status-message" class="mt-4 text-center"></div>
+        </div>
+
     </div>
 
     <script type="module">
@@ -102,6 +141,28 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- Tab Logic ---
+        const manualTab = document.getElementById('manual-tab');
+        const aiTab = document.getElementById('ai-tab');
+        const manualUploader = document.getElementById('manual-uploader');
+        const aiUploader = document.getElementById('ai-uploader');
+
+        manualTab.addEventListener('click', () => {
+            manualUploader.style.display = 'block';
+            aiUploader.style.display = 'none';
+            manualTab.classList.add('active');
+            aiTab.classList.remove('active');
+        });
+
+        aiTab.addEventListener('click', () => {
+            manualUploader.style.display = 'none';
+            aiUploader.style.display = 'block';
+            aiTab.classList.add('active');
+            manualTab.classList.remove('active');
+        });
+
+
+        // --- Manual Uploader Logic ---
         const form = document.getElementById('question-form');
         const uploadButton = document.getElementById('upload-button');
         const statusMessage = document.getElementById('status-message');
@@ -156,6 +217,139 @@
                 uploadButton.textContent = 'Add Question to Database';
             }
         });
+
+        // --- AI Generator Logic ---
+        const generateButton = document.getElementById('generate-button');
+        const aiStatusMessage = document.getElementById('ai-status-message');
+        const aiQuestionTypeSelect = document.getElementById('ai-question-type');
+        const aiInputsContainer = document.getElementById('ai-inputs');
+
+        function renderAiInputs() {
+            const selectedType = aiQuestionTypeSelect.value;
+            aiInputsContainer.innerHTML = ''; // Clear previous inputs
+            
+            if (selectedType === 'album-year') {
+                aiInputsContainer.innerHTML = `
+                    <div class="space-y-4">
+                        <div><label for="ai-band" class="block mb-2 text-sm font-medium">Band Name</label><input type="text" id="ai-band" placeholder="e.g., Slayer"></div>
+                        <div><label for="ai-album" class="block mb-2 text-sm font-medium">Album Title</label><input type="text" id="ai-album" placeholder="e.g., Reign in Blood"></div>
+                        <div><label for="ai-year" class="block mb-2 text-sm font-medium">Release Year</label><input type="text" id="ai-year" placeholder="e.g., 1986"></div>
+                    </div>`;
+            } else if (selectedType === 'song-lyric') {
+                aiInputsContainer.innerHTML = `
+                    <div class="space-y-4">
+                        <div><label for="ai-band" class="block mb-2 text-sm font-medium">Band Name</label><input type="text" id="ai-band" placeholder="e.g., Slayer"></div>
+                        <div><label for="ai-lyric" class="block mb-2 text-sm font-medium">Lyric Snippet</label><input type="text" id="ai-lyric" placeholder="e.g., Raining blood from a lacerated sky"></div>
+                        <div><label for="ai-song" class="block mb-2 text-sm font-medium">Correct Song Title</label><input type="text" id="ai-song" placeholder="e.g., Raining Blood"></div>
+                    </div>`;
+            } else if (selectedType === 'song-album') {
+                 aiInputsContainer.innerHTML = `
+                    <div class="space-y-4">
+                        <div><label for="ai-band" class="block mb-2 text-sm font-medium">Band Name</label><input type="text" id="ai-band" placeholder="e.g., Death"></div>
+                        <div><label for="ai-song" class="block mb-2 text-sm font-medium">Song Title</label><input type="text" id="ai-song" placeholder="e.g., Crystal Mountain"></div>
+                        <div><label for="ai-album" class="block mb-2 text-sm font-medium">Correct Album Title</label><input type="text" id="ai-album" placeholder="e.g., Symbolic"></div>
+                    </div>`;
+            }
+        }
+
+        aiQuestionTypeSelect.addEventListener('change', renderAiInputs);
+        renderAiInputs(); // Initial render
+
+        
+        generateButton.addEventListener('click', async () => {
+            const questionType = aiQuestionTypeSelect.value;
+            let userQuery = '';
+            let categoryToSet = 'bulk';
+
+            if (questionType === 'album-year') {
+                const band = document.getElementById('ai-band').value.trim();
+                const album = document.getElementById('ai-album').value.trim();
+                const year = document.getElementById('ai-year').value.trim();
+                if (!band || !album || !year) { aiStatusMessage.textContent = "Please fill all fields."; aiStatusMessage.style.color = 'red'; return; }
+                userQuery = `Create a multiple-choice trivia question asking what year the band '${band}' released the album ${album}. The correct answer is ${year}. Generate three plausible but incorrect year choices. In the generated "question" text, do not put quotation marks or any other brackets around the album title. Format the output as a JSON object with keys: topic, question, "answer a", "answer b", "answer c", "answer d", and "correct answer". The topic should be the band name.`;
+            } else if (questionType === 'song-lyric') {
+                const band = document.getElementById('ai-band').value.trim();
+                const lyric = document.getElementById('ai-lyric').value.trim();
+                const song = document.getElementById('ai-song').value.trim();
+                if (!band || !lyric || !song) { aiStatusMessage.textContent = "Please fill all fields."; aiStatusMessage.style.color = 'red'; return; }
+                userQuery = `Create a multiple-choice trivia question for the following lyric: "${lyric}". The question should ask "Which ${band} song features this lyric?". The correct answer is "${song}". Generate three other plausible song titles by ${band} as incorrect answers. In the generated "question" text, ensure the song title is enclosed in double quotes. Format the output as a JSON object with keys: topic, question, "answer a", "answer b", "answer c", "answer d", and "correct answer". The topic should be the band name.`;
+                categoryToSet = 'curated';
+            } else if (questionType === 'song-album') {
+                const band = document.getElementById('ai-band').value.trim();
+                const song = document.getElementById('ai-song').value.trim();
+                const album = document.getElementById('ai-album').value.trim();
+                if (!band || !song || !album) { aiStatusMessage.textContent = "Please fill all fields."; aiStatusMessage.style.color = 'red'; return; }
+                userQuery = `Create a multiple-choice trivia question asking on what album the song "${song}" by ${band} is included. The correct answer is "${album}". Generate three other plausible album titles by ${band} as incorrect answers. In the generated "question" text, ensure the song title is enclosed in double quotes. Format the output as a JSON object with keys: topic, question, "answer a", "answer b", "answer c", "answer d", and "correct answer". The topic should be the band name.`;
+                categoryToSet = 'bulk';
+            }
+
+            aiStatusMessage.textContent = 'Generating question with AI...';
+            aiStatusMessage.style.color = 'white';
+            generateButton.disabled = true;
+            generateButton.textContent = 'Generating...';
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: userQuery }] }] };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                
+                const result = await response.json();
+                const text = result.candidates[0].content.parts[0].text;
+                
+                const cleanedText = text.replace(/```json|```/g, '').trim();
+                const generatedData = JSON.parse(cleanedText);
+
+                // Switch to manual tab for review
+                manualTab.click();
+                
+                // Use a tiny timeout to ensure the DOM is updated before populating fields
+                setTimeout(() => {
+                    // Populate the manual form with AI data
+                    document.getElementById('category').value = categoryToSet;
+                    document.getElementById('topic').value = generatedData.topic || '';
+                    document.getElementById('question').value = generatedData.question || '';
+                    document.getElementById('imageUrl').value = '';
+                    document.getElementById('answer-a').value = generatedData['answer a'] || '';
+                    document.getElementById('answer-b').value = generatedData['answer b'] || '';
+                    document.getElementById('answer-c').value = generatedData['answer c'] || '';
+                    document.getElementById('answer-d').value = generatedData['answer d'] || '';
+                    
+                    // Uncheck all radio buttons first
+                    document.querySelectorAll('input[name="correct-answer"]').forEach(radio => radio.checked = false);
+                    
+                    const correctRadio = document.querySelector(`input[name="correct-answer"][value="${generatedData['correct answer'].toUpperCase()}"]`);
+                    if (correctRadio) {
+                        correctRadio.checked = true;
+                    } else {
+                        document.getElementById('correct-a').checked = true;
+                        console.warn("AI returned an invalid 'correct answer'. Defaulting to A.");
+                    }
+
+                    statusMessage.textContent = 'AI-generated question is ready for review. Edit if needed and save.';
+                    statusMessage.style.color = 'green';
+                }, 0);
+                
+                // Clear AI form and status
+                aiStatusMessage.textContent = '';
+                renderAiInputs();
+
+            } catch (error) {
+                aiStatusMessage.textContent = `Error generating question: ${error.message}`;
+                aiStatusMessage.style.color = 'red';
+                console.error("AI Generation Error:", error);
+            } finally {
+                 generateButton.disabled = false;
+                 generateButton.textContent = 'Generate Question';
+            }
+        });
+
     </script>
 </body>
 </html>
