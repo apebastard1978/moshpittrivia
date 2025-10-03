@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mosh Pit Trivia - Question Uploader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        body { font-family: 'Special Elite', monospace; }
+        input[type="text"], select {
+            background-color: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: #FFFFFF;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-gray-900 border-2 border-gray-700 rounded-lg p-6 shadow-lg">
+        <h1 class="text-3xl font-bold text-red-600 mb-4 text-center">Question Uploader</h1>
+        
+        <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
+            <p class="text-gray-300">Fill out the form below to add a new question directly to your Firestore database. For picture questions, add a direct image link to the URL field.</p>
+        </div>
+        
+        <form id="question-form" class="space-y-4">
+            <div>
+                <label for="category" class="block mb-2 text-sm font-medium text-gray-300">Category</label>
+                <select id="category" name="category">
+                    <option value="bulk">Bulk Question</option>
+                    <option value="curated">Curated Question</option>
+                    <option value="picture">Picture Question</option>
+                </select>
+            </div>
+            <div>
+                <label for="topic" class="block mb-2 text-sm font-medium text-gray-300">Topic</label>
+                <input type="text" id="topic" name="topic" placeholder="e.g., Band Recognition" required>
+            </div>
+            <div>
+                <label for="question" class="block mb-2 text-sm font-medium text-gray-300">Question Text</label>
+                <input type="text" id="question" name="question" placeholder="e.g., Which band is this?" required>
+            </div>
+             <div>
+                <label for="imageUrl" class="block mb-2 text-sm font-medium text-gray-300">Image URL (Optional)</label>
+                <input type="text" id="imageUrl" name="imageUrl" placeholder="https://i.imgur.com/your-image.jpg">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="answer-a" class="block mb-2 text-sm font-medium text-gray-300">Answer A</label>
+                    <input type="text" id="answer-a" name="answer-a" required>
+                </div>
+                 <div>
+                    <label for="answer-b" class="block mb-2 text-sm font-medium text-gray-300">Answer B</label>
+                    <input type="text" id="answer-b" name="answer-b" required>
+                </div>
+                 <div>
+                    <label for="answer-c" class="block mb-2 text-sm font-medium text-gray-300">Answer C</label>
+                    <input type="text" id="answer-c" name="answer-c" required>
+                </div>
+                 <div>
+                    <label for="answer-d" class="block mb-2 text-sm font-medium text-gray-300">Answer D</label>
+                    <input type="text" id="answer-d" name="answer-d" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block mb-2 text-sm font-medium text-gray-300">Correct Answer</label>
+                <div class="flex items-center gap-x-6 gap-y-2 flex-wrap">
+                    <div class="flex items-center"><input id="correct-a" name="correct-answer" type="radio" value="A" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500" checked><label for="correct-a" class="ml-2">A</label></div>
+                    <div class="flex items-center"><input id="correct-b" name="correct-answer" type="radio" value="B" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-b" class="ml-2">B</label></div>
+                    <div class="flex items-center"><input id="correct-c" name="correct-answer" type="radio" value="C" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-c" class="ml-2">C</label></div>
+                    <div class="flex items-center"><input id="correct-d" name="correct-answer" type="radio" value="D" class="h-4 w-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500"><label for="correct-d" class="ml-2">D</label></div>
+                </div>
+            </div>
+
+            <button id="upload-button" type="submit" class="mt-4 w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Add Question to Database</button>
+        </form>
+        
+        <div id="status-message" class="mt-4 text-center"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- IMPORTANT ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyDWRy98n7R2T-_iAWZKFJHoo9q7ISms1oA",
+          authDomain: "mosh-pit-trivia.firebaseapp.com",
+          projectId: "mosh-pit-trivia",
+          storageBucket: "mosh-pit-trivia.appspot.com",
+          messagingSenderId: "49415406295",
+          appId: "1:49415406295:web:a6c6ad785af58fd4f9a692",
+          measurementId: "G-6L8WR5T0VT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const form = document.getElementById('question-form');
+        const uploadButton = document.getElementById('upload-button');
+        const statusMessage = document.getElementById('status-message');
+        const imageUrlInput = document.getElementById('imageUrl');
+        const categorySelect = document.getElementById('category');
+
+        imageUrlInput.addEventListener('input', () => {
+            if (imageUrlInput.value.trim() !== '') {
+                categorySelect.value = 'picture';
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const questionData = {
+                category: formData.get('category'),
+                topic: formData.get('topic'),
+                question: formData.get('question'),
+                imageUrl: formData.get('imageUrl') || null,
+                'answer a': formData.get('answer-a'),
+                'answer b': formData.get('answer-b'),
+                'answer c': formData.get('answer-c'),
+                'answer d': formData.get('answer-d'),
+                'correct answer': formData.get('correct-answer'),
+            };
+
+            if (!questionData.imageUrl) {
+                delete questionData.imageUrl;
+            }
+
+            statusMessage.textContent = `Uploading question...`;
+            statusMessage.style.color = 'white';
+            uploadButton.disabled = true;
+            uploadButton.textContent = 'Uploading...';
+
+            try {
+                const questionsCollectionRef = collection(db, "questions");
+                await addDoc(questionsCollectionRef, questionData);
+
+                statusMessage.textContent = `Successfully added question!`;
+                statusMessage.style.color = 'green';
+                form.reset();
+
+            } catch (error) {
+                statusMessage.textContent = `Error: ${error.message}. Please check the console for details.`;
+                statusMessage.style.color = 'red';
+                console.error("Upload error:", error);
+            } finally {
+                uploadButton.disabled = false;
+                uploadButton.textContent = 'Add Question to Database';
+            }
+        });
+    </script>
+</body>
+</html>
+
