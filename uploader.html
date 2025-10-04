@@ -35,6 +35,7 @@
         <div class="flex border-b border-gray-700 mb-6">
             <div id="manual-tab" class="tab active">Manual Entry</div>
             <div id="ai-tab" class="tab">AI Generator</div>
+            <div id="bulk-tab" class="tab">Bulk JSON Upload</div>
         </div>
 
         <!-- Manual Uploader Tab -->
@@ -120,12 +121,22 @@
             </div>
              <div id="ai-status-message" class="mt-4 text-center"></div>
         </div>
+        
+        <!-- Bulk JSON Uploader Tab -->
+        <div id="bulk-uploader" style="display: none;">
+            <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
+                <p class="text-gray-300">Paste the entire content of your <code>questions.json</code> file into the text box below and click the upload button.</p>
+            </div>
+            <textarea id="json-input" class="w-full h-96 bg-gray-800 border border-gray-600 rounded p-2 text-white font-mono" placeholder="[ { &quot;topic&quot;: ..., &quot;category&quot;: &quot;bulk&quot;, ... } ]"></textarea>
+            <button id="bulk-upload-button" class="mt-4 w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Upload JSON</button>
+            <div id="bulk-status-message" class="mt-4 text-center"></div>
+        </div>
 
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, writeBatch, doc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- IMPORTANT ---
         const firebaseConfig = {
@@ -144,21 +155,36 @@
         // --- Tab Logic ---
         const manualTab = document.getElementById('manual-tab');
         const aiTab = document.getElementById('ai-tab');
+        const bulkTab = document.getElementById('bulk-tab');
         const manualUploader = document.getElementById('manual-uploader');
         const aiUploader = document.getElementById('ai-uploader');
+        const bulkUploader = document.getElementById('bulk-uploader');
 
         manualTab.addEventListener('click', () => {
             manualUploader.style.display = 'block';
             aiUploader.style.display = 'none';
+            bulkUploader.style.display = 'none';
             manualTab.classList.add('active');
             aiTab.classList.remove('active');
+            bulkTab.classList.remove('active');
         });
 
         aiTab.addEventListener('click', () => {
             manualUploader.style.display = 'none';
             aiUploader.style.display = 'block';
+            bulkUploader.style.display = 'none';
             aiTab.classList.add('active');
             manualTab.classList.remove('active');
+            bulkTab.classList.remove('active');
+        });
+
+        bulkTab.addEventListener('click', () => {
+            manualUploader.style.display = 'none';
+            aiUploader.style.display = 'none';
+            bulkUploader.style.display = 'block';
+            bulkTab.classList.add('active');
+            manualTab.classList.remove('active');
+            aiTab.classList.remove('active');
         });
 
 
@@ -288,7 +314,8 @@
             generateButton.disabled = true;
             generateButton.textContent = 'Generating...';
 
-            const apiKey = "";
+            const apiKey = "AIzaSyD3EObxZ1XWXXsliYx38AVmeM0PjleP7wQ";
+            
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             const payload = { contents: [{ parts: [{ text: userQuery }] }] };
 
@@ -306,12 +333,9 @@
                 const cleanedText = text.replace(/```json|```/g, '').trim();
                 const generatedData = JSON.parse(cleanedText);
 
-                // Switch to manual tab for review
                 manualTab.click();
                 
-                // Use a tiny timeout to ensure the DOM is updated before populating fields
                 setTimeout(() => {
-                    // Populate the manual form with AI data
                     document.getElementById('category').value = categoryToSet;
                     document.getElementById('topic').value = generatedData.topic || '';
                     document.getElementById('question').value = generatedData.question || '';
@@ -321,22 +345,30 @@
                     document.getElementById('answer-c').value = generatedData['answer c'] || '';
                     document.getElementById('answer-d').value = generatedData['answer d'] || '';
                     
-                    // Uncheck all radio buttons first
                     document.querySelectorAll('input[name="correct-answer"]').forEach(radio => radio.checked = false);
                     
-                    const correctRadio = document.querySelector(`input[name="correct-answer"][value="${generatedData['correct answer'].toUpperCase()}"]`);
-                    if (correctRadio) {
-                        correctRadio.checked = true;
+                    let correctLetter = 'A'; 
+                    const aiCorrectAnswer = generatedData['correct answer']; 
+
+                    if (aiCorrectAnswer === generatedData['answer a']) { correctLetter = 'A'; }
+                    else if (aiCorrectAnswer === generatedData['answer b']) { correctLetter = 'B'; }
+                    else if (aiCorrectAnswer === generatedData['answer c']) { correctLetter = 'C'; }
+                    else if (aiCorrectAnswer === generatedData['answer d']) { correctLetter = 'D'; }
+                    else if (['A', 'B', 'C', 'D'].includes(aiCorrectAnswer.toUpperCase())) {
+                        correctLetter = aiCorrectAnswer.toUpperCase();
+                    }
+
+                    const correctRadioToSelect = document.querySelector(`input[name="correct-answer"][value="${correctLetter}"]`);
+                    if (correctRadioToSelect) {
+                        correctRadioToSelect.checked = true;
                     } else {
-                        document.getElementById('correct-a').checked = true;
-                        console.warn("AI returned an invalid 'correct answer'. Defaulting to A.");
+                        document.getElementById('correct-a').checked = true; 
                     }
 
                     statusMessage.textContent = 'AI-generated question is ready for review. Edit if needed and save.';
                     statusMessage.style.color = 'green';
-                }, 0);
+                }, 10); 
                 
-                // Clear AI form and status
                 aiStatusMessage.textContent = '';
                 renderAiInputs();
 
@@ -347,6 +379,52 @@
             } finally {
                  generateButton.disabled = false;
                  generateButton.textContent = 'Generate Question';
+            }
+        });
+
+        // --- Bulk Uploader Logic ---
+        const bulkUploadButton = document.getElementById('bulk-upload-button');
+        const jsonInput = document.getElementById('json-input');
+        const bulkStatusMessage = document.getElementById('bulk-status-message');
+
+        bulkUploadButton.addEventListener('click', async () => {
+            const jsonText = jsonInput.value.trim();
+            if (!jsonText) {
+                bulkStatusMessage.textContent = "Error: Text box is empty.";
+                bulkStatusMessage.style.color = 'red';
+                return;
+            }
+
+            try {
+                const questions = JSON.parse(jsonText);
+                if (!Array.isArray(questions)) {
+                    throw new Error("Input is not a valid JSON array.");
+                }
+
+                bulkStatusMessage.textContent = `Uploading ${questions.length} questions...`;
+                bulkStatusMessage.style.color = 'white';
+                bulkUploadButton.disabled = true;
+
+                const batch = writeBatch(db);
+                const questionsCollectionRef = collection(db, "questions");
+
+                questions.forEach(questionData => {
+                    const newQuestionRef = doc(questionsCollectionRef);
+                    batch.set(newQuestionRef, questionData);
+                });
+
+                await batch.commit();
+
+                bulkStatusMessage.textContent = `Successfully uploaded ${questions.length} questions!`;
+                bulkStatusMessage.style.color = 'green';
+                jsonInput.value = '';
+
+            } catch (error) {
+                bulkStatusMessage.textContent = `Error: ${error.message}. Please check the console for details.`;
+                bulkStatusMessage.style.color = 'red';
+                console.error("Bulk Upload Error:", error);
+            } finally {
+                bulkUploadButton.disabled = false;
             }
         });
 

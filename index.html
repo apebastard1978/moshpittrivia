@@ -30,21 +30,27 @@
             z-index: -1;
         }
 
-        .trivia-container, #start-screen, #end-of-round-screen, #help-modal {
+        .trivia-container, #start-screen, #end-of-round-screen, #help-modal, #landing-screen {
             max-width: 768px;
             width: 100%;
             background-color: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(5px);
             border: 2px solid #333333;
             border-radius: 1rem;
-            padding: 2rem;
+            padding: 1rem;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
             position: relative;
             overflow-y: auto;
             max-height: 95vh;
         }
 
-        #start-screen, #help-modal {
+        @media (min-width: 640px) {
+            .trivia-container, #start-screen, #end-of-round-screen, #help-modal, #landing-screen {
+                padding: 2rem;
+            }
+        }
+
+        #start-screen, #help-modal, #landing-screen {
              display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -64,6 +70,7 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 1rem;
             margin-bottom: 2rem;
         }
         
@@ -263,13 +270,14 @@
             border-bottom: none;
         }
 
-        #username-input {
+        #auth-container input {
             background-color: #2b2b2b;
             border: 1px solid #333333;
             border-radius: 0.5rem;
             padding: 0.5rem;
             color: #FFFFFF;
             text-align: center;
+            width: 100%;
         }
 
         #timer-display.low-time {
@@ -339,14 +347,57 @@
 
     <div id="background-layer"></div>
     
-    <!-- Start Screen (Initially Visible) -->
+    <!-- Auth Screen (Initially Visible) -->
     <div id="start-screen" class="p-4 sm:p-8">
         <h1 class="text-4xl sm:text-5xl font-bold mb-4 text-red-600">Mosh Pit Trivia</h1>
-        <div id="username-section">
-            <h2 class="text-xl font-bold">Choose a Username</h2>
-            <input type="text" id="username-input" placeholder="Enter your name" maxlength="20">
-            <button id="username-confirm-button" class="game-button">Start Game</button>
+        <div id="auth-container">
+            <!-- Login Form -->
+            <form id="login-form" class="space-y-4">
+                <h2 class="text-xl font-bold">Login</h2>
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="game-button w-full">Login</button>
+                <p class="text-sm text-gray-400">
+                    Don't have an account? 
+                    <button type="button" id="show-signup" class="text-red-500 hover:underline">Sign Up</button>
+                </p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="space-y-4" style="display: none;">
+                <h2 class="text-xl font-bold">Sign Up</h2>
+                <input type="text" id="signup-name" placeholder="Display Name" required>
+                <input type="email" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <button type="submit" class="game-button w-full">Sign Up</button>
+                <p class="text-sm text-gray-400">
+                    Already have an account? 
+                    <button type="button" id="show-login" class="text-red-500 hover:underline">Login</button>
+                </p>
+            </form>
+            <p id="auth-error" class="text-red-500 mt-4"></p>
         </div>
+    </div>
+
+     <!-- Landing Screen (Shown after login/signup) -->
+    <div id="landing-screen" class="p-4 sm:p-8" style="display: none;">
+        <h1 id="welcome-message" class="text-4xl sm:text-5xl font-bold mb-4 text-red-600">Welcome!</h1>
+        <div class="text-left space-y-4 text-gray-300">
+            <h2 class="text-2xl font-bold text-white">How to Play</h2>
+            <p>Get ready to test your metal knowledge! Here's the drill:</p>
+            <ul class="list-disc list-inside space-y-2">
+                <li>Each round has <strong>10 questions</strong>: 9 text-based and 1 final picture-based question.</li>
+                <li>Answer correctly to earn <strong>Mosh Pit Points (MPP)</strong>. Perfect rounds get a bonus!</li>
+                <li>Use your points to buy lifelines: get <strong>+5 seconds</strong> on the clock or use a <strong>50/50</strong> to eliminate two wrong answers.</li>
+                <li>Climb the leaderboard and become a trivia legend!</li>
+            </ul>
+        </div>
+        <div class="mt-4 text-center">
+            <h3 class="text-xl font-bold text-white">Your All-Time High Score</h3>
+            <p class="text-3xl font-bold text-red-600" id="landing-score-display">0 <span class="text-lg text-white">MPP</span></p>
+        </div>
+        <button id="start-game-button" class="game-button w-full">Start the Mosh Pit</button>
+        <button id="landing-signout-button" class="game-button quit-button w-full">Sign Out</button>
     </div>
 
     <!-- Main Game Screen (Initially Hidden) -->
@@ -376,7 +427,7 @@
                 </div>
                  <div id="help-lifeline" class="lifeline" title="Help">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm11.378-3.917c-.89-.777-2.466-.777-3.356 0a.75.75 0 01-1.06-1.06 4.125 4.125 0 015.472 0 .75.75 0 01-1.06 1.06zM10.5 11.25a.75.75 0 00-1.5 0v1.5a.75.75 0 001.5 0v-1.5zM12 15.75a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H12a.75.75 0 01-.75-.75v-.008z" clip-rule="evenodd" />
+                        <path fill-rule="evenodd" d="M9.25 5.25a.75.75 0 011.5 0V6h.75a2.25 2.25 0 012.25 2.25v.75a2.25 2.25 0 01-2.25 2.25h-.75v.25a.75.75 0 01-1.5 0V11.25a.75.75 0 01.75-.75h.75a.75.75 0 00.75-.75V8.25a.75.75 0 00-.75-.75h-1.5V5.25zM12 15.75a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75v-.008a.75.75 0 00-.75-.75H12z" clip-rule="evenodd" />
                     </svg>
                 </div>
             </div>
@@ -450,8 +501,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, query, limit, runTransaction, orderBy, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, query, limit, runTransaction, orderBy, getDocs, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
         // --- Firebase Setup ---
         const firebaseConfig = {
@@ -472,22 +523,27 @@
         let username = '';
 
         // --- Game State Variables ---
-        let textQuestionIds = [];
-        let pictureQuestionIds = [];
-        let shuffledTextQuestionIds = [];
-        let shuffledPictureQuestionIds = [];
-        let shuffledTextIndex = 0;
-        let shuffledPictureIndex = 0;
+        let allTextQuestionIds = [];
+        let allPictureQuestionIds = [];
+        
+        let userProgress = {
+            shuffledTextQuestionIds: [],
+            shuffledPictureQuestionIds: [],
+            shuffledTextIndex: 0,
+            shuffledPictureIndex: 0,
+            moshPitPoints: 0
+        };
+
         let gameQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
-        let moshPitPoints = 0;
         let fiftyFiftyUsedThisQuestion = false;
         let questionTimer;
         let timeLeft = 10;
         
         // --- DOM Element References ---
         const startScreenEl = document.getElementById('start-screen');
+        const landingScreenEl = document.getElementById('landing-screen');
         const triviaContainerEl = document.querySelector('.trivia-container');
         const endOfRoundScreenEl = document.getElementById('end-of-round-screen');
         const endRoundTitleEl = document.getElementById('end-round-title');
@@ -505,11 +561,22 @@
         const helpLifelineEl = document.getElementById('help-lifeline');
         const helpModalEl = document.getElementById('help-modal');
         const closeHelpButtonEl = document.getElementById('close-help-button');
-        const usernameInputEl = document.getElementById('username-input');
-        const usernameConfirmButtonEl = document.getElementById('username-confirm-button');
         const usernameDisplayEl = document.getElementById('username-display');
         const timerDisplayEl = document.getElementById('timer-display');
         const progressBarEl = document.getElementById('progress-bar');
+        const landingSignoutButton = document.getElementById('landing-signout-button');
+        const startGameButton = document.getElementById('start-game-button');
+        const welcomeMessageEl = document.getElementById('welcome-message');
+        const landingScoreDisplayEl = document.getElementById('landing-score-display');
+
+
+        // Auth elements
+        const authContainer = document.getElementById('auth-container');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const showSignupBtn = document.getElementById('show-signup');
+        const showLoginBtn = document.getElementById('show-login');
+        const authErrorEl = document.getElementById('auth-error');
 
         // --- Data Fetching and Transformation ---
         
@@ -534,16 +601,16 @@
         }
 
         async function fetchAndCategorizeQuestions() {
-            if (textQuestionIds.length > 0 || pictureQuestionIds.length > 0) return;
+            if (allTextQuestionIds.length > 0 || allPictureQuestionIds.length > 0) return;
             try {
                 const questionsCollectionRef = collection(db, `questions`);
                 const snapshot = await getDocs(query(questionsCollectionRef));
                 snapshot.docs.forEach(doc => {
                     const data = doc.data();
                     if (data.imageUrl) {
-                        pictureQuestionIds.push(doc.id);
+                        allPictureQuestionIds.push(doc.id);
                     } else {
-                        textQuestionIds.push(doc.id);
+                        allTextQuestionIds.push(doc.id);
                     }
                 });
             } catch (error) {
@@ -569,13 +636,23 @@
         }
 
         async function startNewRound() {
-            if (shuffledTextIndex >= shuffledTextQuestionIds.length || shuffledPictureIndex >= shuffledPictureQuestionIds.length) {
+            if (userProgress.shuffledTextIndex >= userProgress.shuffledTextQuestionIds.length || 
+                userProgress.shuffledPictureIndex >= userProgress.shuffledPictureQuestionIds.length) {
+                
                 triviaContainerEl.style.display = 'none';
                 endOfRoundScreenEl.style.display = 'block';
                 endRoundTitleEl.textContent = "You've Rocked Them All!";
-                endRoundContentEl.textContent = `You've completed all available questions. Your final score is ${moshPitPoints} MPP!`;
+                endRoundContentEl.textContent = `You've completed all available questions. Your final score is ${userProgress.moshPitPoints} MPP! Click 'Play Again' to start a new season.`;
                 continueButtonEl.style.display = 'none';
                 quitButtonEl.textContent = "Play Again";
+
+                // Reset progress for next season
+                userProgress.shuffledTextIndex = 0;
+                userProgress.shuffledPictureIndex = 0;
+                userProgress.shuffledTextQuestionIds = [];
+                userProgress.shuffledPictureQuestionIds = [];
+                await saveUserProgress();
+
                 return;
             }
 
@@ -586,52 +663,36 @@
             questionTextEl.textContent = "Getting the next setlist...";
             answerGridEl.innerHTML = '';
             
-            let roundIds = [];
-            const textIdsForRound = shuffledTextQuestionIds.slice(shuffledTextIndex, shuffledTextIndex + 9);
-            shuffledTextIndex += 9;
+            const textIdsForRound = userProgress.shuffledTextQuestionIds.slice(userProgress.shuffledTextIndex, userProgress.shuffledTextIndex + 9);
+            const pictureIdForRound = userProgress.shuffledPictureQuestionIds[userProgress.shuffledPictureIndex];
             
-            const pictureIdForRound = shuffledPictureQuestionIds[shuffledPictureIndex];
-            shuffledPictureIndex++;
-
-            roundIds = [...textIdsForRound, pictureIdForRound].filter(Boolean);
-
+            const roundIds = [...textIdsForRound, pictureIdForRound].filter(Boolean);
             gameQuestions = await fetchQuestionsByIds(roundIds);
             
-            // Ensure picture question is last
             gameQuestions.sort((a, b) => (a.imageUrl ? 1 : 0) - (b.imageUrl ? 1 : 0));
-
-            // Preload the image for the final question of the round
-            if (gameQuestions.length > 0) {
-                const pictureQuestion = gameQuestions[gameQuestions.length - 1];
-                if (pictureQuestion && pictureQuestion.imageUrl) {
-                    const preloader = new Image();
-                    preloader.src = pictureQuestion.imageUrl;
-                }
+            
+            if (gameQuestions.length > 0 && gameQuestions[gameQuestions.length - 1].imageUrl) {
+                const preloader = new Image();
+                preloader.src = gameQuestions[gameQuestions.length - 1].imageUrl;
             }
 
             if(gameQuestions.length === 0){
-                 if (textQuestionIds.length < 9 || pictureQuestionIds.length < 1) {
-                    questionTextEl.textContent = "Not enough questions in the database. Please upload at least 9 text questions and 1 picture question.";
-                } else {
-                    questionTextEl.textContent = "Failed to load questions from the database. Please try again.";
-                }
+                questionTextEl.textContent = "Failed to load questions from the database. Please try again.";
                 return;
             }
             
             loadQuestion();
         }
         
-        function resetGame() {
+        function resetGameAndSignOut() {
             clearInterval(questionTimer);
             currentQuestionIndex = 0;
-            shuffledTextIndex = 0;
-            shuffledPictureIndex = 0;
             score = 0;
-            moshPitPoints = 0;
+            userProgress = { shuffledTextQuestionIds: [], shuffledPictureQuestionIds: [], shuffledTextIndex: 0, shuffledPictureIndex: 0, moshPitPoints: 0 };
             progressBarEl.style.width = '0%';
-            updateCurrencyDisplay();
             endOfRoundScreenEl.style.display = 'none';
             triviaContainerEl.style.display = 'none';
+            landingScreenEl.style.display = 'none';
             startScreenEl.style.display = 'flex';
         }
 
@@ -681,7 +742,7 @@
             if (selectedAnswer === correctAnswer) {
                 button.classList.add('correct-answer');
                 score++;
-                moshPitPoints++;
+                userProgress.moshPitPoints++;
                 updateCurrencyDisplay();
             } else {
                 button.classList.add('incorrect-answer');
@@ -696,17 +757,22 @@
             loadQuestion();
         }
 
-        function handleRoundComplete() {
+        async function handleRoundComplete() {
             clearInterval(questionTimer);
+            
+            userProgress.shuffledTextIndex += gameQuestions.filter(q => !q.imageUrl).length;
+            userProgress.shuffledPictureIndex += gameQuestions.filter(q => q.imageUrl).length;
+            await saveUserProgress();
+
             let title = "Round Complete!";
             let message = `You answered ${score} out of ${gameQuestions.length} questions correctly.`;
             if (score === gameQuestions.length) {
                 title = "Perfect Round!";
-                moshPitPoints += 5;
+                userProgress.moshPitPoints += 5;
                 updateCurrencyDisplay();
                 message += ` Flawless! You earned a 5-point bonus!`;
             }
-            message += ` Total Mosh Pit Points: ${moshPitPoints}.`;
+            message += ` Total Mosh Pit Points: ${userProgress.moshPitPoints}.`;
             
             endRoundTitleEl.textContent = title;
             endRoundContentEl.textContent = message;
@@ -745,16 +811,16 @@
         }
 
         function updateCurrencyDisplay() {
-            moshPitPointsCountEl.textContent = moshPitPoints;
+            moshPitPointsCountEl.textContent = userProgress.moshPitPoints;
             const firstAnswerButton = answerGridEl.querySelector('button');
             const questionInProgress = firstAnswerButton && !firstAnswerButton.disabled;
 
-            if (moshPitPoints >= 5 && questionInProgress) {
+            if (userProgress.moshPitPoints >= 5 && questionInProgress) {
                 buyTimeLifelineEl.classList.remove('used');
             } else {
                 buyTimeLifelineEl.classList.add('used');
             }
-            if (moshPitPoints >= 10 && !fiftyFiftyUsedThisQuestion && questionInProgress) {
+            if (userProgress.moshPitPoints >= 10 && !fiftyFiftyUsedThisQuestion && questionInProgress) {
                 fiftyFiftyLifelineEl.classList.remove('used');
             } else {
                 fiftyFiftyLifelineEl.classList.add('used');
@@ -763,10 +829,10 @@
 
         fiftyFiftyLifelineEl.onclick = () => {
             const firstAnswerButton = answerGridEl.querySelector('button');
-            if (fiftyFiftyUsedThisQuestion || moshPitPoints < 10 || !firstAnswerButton || firstAnswerButton.disabled) return;
+            if (fiftyFiftyUsedThisQuestion || userProgress.moshPitPoints < 10 || !firstAnswerButton || firstAnswerButton.disabled) return;
             
-            moshPitPoints -= 10;
-            fiftyFiftyUsedThisQuestion = true; // Can only be used once per question now
+            userProgress.moshPitPoints -= 10;
+            fiftyFiftyUsedThisQuestion = true; 
             updateCurrencyDisplay();
             
             const currentQuestion = gameQuestions[currentQuestionIndex];
@@ -785,13 +851,39 @@
 
         buyTimeLifelineEl.onclick = () => {
             const firstAnswerButton = answerGridEl.querySelector('button');
-            if (moshPitPoints >= 5 && firstAnswerButton && !firstAnswerButton.disabled) {
-                moshPitPoints -= 5;
+            if (userProgress.moshPitPoints >= 5 && firstAnswerButton && !firstAnswerButton.disabled) {
+                userProgress.moshPitPoints -= 5;
                 timeLeft += 5;
                 updateCurrencyDisplay();
                 updateTimerDisplay();
             }
         };
+
+        // --- User Data and Progress ---
+
+        async function saveUserProgress() {
+            if (!userId) return;
+            const progressRef = doc(db, 'userProgress', userId);
+            await setDoc(progressRef, userProgress);
+        }
+
+        async function loadUserProgress() {
+            const progressRef = doc(db, 'userProgress', userId);
+            const docSnap = await getDoc(progressRef);
+            if (docSnap.exists() && docSnap.data().shuffledTextQuestionIds.length > 0) {
+                userProgress = docSnap.data();
+            } else {
+                // First time playing or new season, create a new shuffle
+                userProgress = {
+                    shuffledTextQuestionIds: [...allTextQuestionIds].sort(() => Math.random() - 0.5),
+                    shuffledPictureQuestionIds: [...allPictureQuestionIds].sort(() => Math.random() - 0.5),
+                    shuffledTextIndex: 0,
+                    shuffledPictureIndex: 0,
+                    moshPitPoints: 0
+                };
+                await saveUserProgress();
+            }
+        }
 
         async function saveScoreToLeaderboard() {
             if (!userId) return;
@@ -800,10 +892,10 @@
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(leaderboardRef);
                     const currentHighScore = userDoc.exists() ? userDoc.data().moshPitPoints : 0;
-                    if (moshPitPoints > currentHighScore) {
+                    if (userProgress.moshPitPoints > currentHighScore) {
                         transaction.set(leaderboardRef, {
                             displayName: username,
-                            moshPitPoints: moshPitPoints
+                            moshPitPoints: userProgress.moshPitPoints
                         });
                     }
                 });
@@ -825,102 +917,111 @@
             });
         }
 
-        // --- Initialization ---
-
-        window.onload = async () => {
-            triviaContainerEl.style.display = 'none';
-            endOfRoundScreenEl.style.display = 'none';
-            startScreenEl.style.display = 'flex';
-            usernameConfirmButtonEl.disabled = true;
-            usernameConfirmButtonEl.textContent = 'CONNECTING...';
-
-            try {
-                await signInAnonymously(auth);
-            } catch (error) {
-                console.error("Authentication failed:", error);
-                let errorMessage = `<div class="text-left">
-                        <h1 class="text-2xl font-bold text-red-500 mb-4">Authentication Error</h1>`;
-
-                if (error.code === 'auth/api-key-not-valid') {
-                    errorMessage += `<p class="mb-2">Your Firebase API Key is not valid. This usually means the <strong>Firebase credentials</strong> in the script are incorrect or are still placeholders.</p>
-                        <p><strong>To fix this:</strong></p>
-                        <ol class="list-decimal list-inside mt-2">
-                            <li>Go to your Firebase Console and find your web app's configuration object.</li>
-                            <li>Copy the entire <code>firebaseConfig</code> object.</li>
-                            <li>Paste it into the s <code>index.html</code> file, replacing the placeholder.</li>
-                        </ol>`;
-                } else {
-                    errorMessage += `<p class="mb-2">The game could not sign in. This often means the <strong>Anonymous sign-in method</strong> is not enabled in your Firebase project.</p>
-                        <p><strong>To fix this:</strong></p>
-                        <ol class="list-decimal list-inside mt-2">
-                            <li>Go to your Firebase Console.</li>
-                            <li>Navigate to <strong>Build > Authentication > Sign-in method</strong>.</li>
-                            <li>Find "Anonymous" in the list and enable it.</li>
-                            <li>Refresh this page.</li>
-                        </ol>`;
-                }
-                errorMessage += `</div>`;
-                startScreenEl.innerHTML = errorMessage;
-            }
-        };
+        // --- Initialization & Auth ---
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 userId = user.uid;
-                username = localStorage.getItem('mosh-pit-trivia-username');
-                if(username) {
-                    usernameInputEl.value = username;
-                }
-                await fetchAndCategorizeQuestions();
+                username = user.displayName;
                 
-                if (textQuestionIds.length < 9 || pictureQuestionIds.length < 1) {
+                await fetchAndCategorizeQuestions();
+                await loadUserProgress();
+                
+                landingScoreDisplayEl.innerHTML = `${userProgress.moshPitPoints} <span class="text-lg text-white">MPP</span>`;
+                
+                if (allTextQuestionIds.length < 9 || allPictureQuestionIds.length < 1) {
                      startScreenEl.innerHTML = `
                         <h1 class="text-3xl font-bold text-red-500 mb-4">Not Enough Questions</h1>
                         <p>Please use the uploader tool to add more questions to the database.</p>
                         <p class="mt-2">You need at least <strong>9 text questions</strong> and <strong>1 picture question</strong> to play.</p>
                      `;
+                     startScreenEl.style.display = 'flex';
                 } else {
-                    usernameConfirmButtonEl.disabled = false;
-                    usernameConfirmButtonEl.textContent = 'Start Game';
+                    startScreenEl.style.display = 'none';
+                    landingScreenEl.style.display = 'flex';
+                    welcomeMessageEl.textContent = `Welcome, ${username}!`;
                 }
                 
                 listenForLeaderboardUpdates();
+            } else {
+                // No user is signed in
+                resetGameAndSignOut();
             }
         });
 
         async function beginGame() {
-            startScreenEl.style.display = 'none';
+            landingScreenEl.style.display = 'none';
             triviaContainerEl.style.display = 'block';
-            clearInterval(questionTimer);
-            shuffledTextIndex = 0;
-            shuffledPictureIndex = 0;
-            moshPitPoints = 0;
-            updateCurrencyDisplay();
-            
-            shuffledTextQuestionIds = [...textQuestionIds].sort(() => Math.random() - 0.5);
-            shuffledPictureQuestionIds = [...pictureQuestionIds].sort(() => Math.random() - 0.5);
-            
+            usernameDisplayEl.textContent = username;
             await startNewRound();
         }
-
-        usernameConfirmButtonEl.onclick = () => {
-            const inputUsername = usernameInputEl.value.trim();
-            if (inputUsername) {
-                username = inputUsername;
-                localStorage.setItem('mosh-pit-trivia-username', username);
-                usernameDisplayEl.textContent = username;
-                beginGame();
-            }
-        };
         
+        showSignupBtn.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        });
+
+        showLoginBtn.addEventListener('click', () => {
+            signupForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            authErrorEl.textContent = '';
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await updateProfile(userCredential.user, { displayName: name });
+            } catch (error) {
+                authErrorEl.textContent = error.message;
+            }
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            authErrorEl.textContent = '';
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                authErrorEl.textContent = error.message;
+            }
+        });
+        
+        landingSignoutButton.onclick = () => {
+            signOut(auth);
+        }
+        
+        startGameButton.onclick = () => {
+            beginGame();
+        };
+
         continueButtonEl.onclick = () => {
             endOfRoundScreenEl.style.display = 'none';
             triviaContainerEl.style.display = 'block';
             startNewRound();
         };
 
-        quitButtonEl.onclick = () => {
-            resetGame();
+        quitButtonEl.onclick = async () => {
+            if (quitButtonEl.textContent === 'Play Again') {
+                // This triggers a full re-shuffle and starts a new game
+                await beginGame();
+            } else {
+                // Go back to landing screen
+                const leaderboardRef = doc(db, 'leaderboard', userId);
+                const userDoc = await getDoc(leaderboardRef);
+                const userHighScore = userDoc.exists() ? userDoc.data().moshPitPoints : 0;
+                landingScoreDisplayEl.innerHTML = `${userHighScore} <span class="text-lg text-white">MPP</span>`;
+                
+                triviaContainerEl.style.display = 'none';
+                endOfRoundScreenEl.style.display = 'none';
+                startScreenEl.style.display = 'none';
+                landingScreenEl.style.display = 'flex';
+            }
         };
 
         helpLifelineEl.onclick = () => {
