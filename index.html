@@ -387,14 +387,13 @@
             <p>Get ready to test your metal knowledge! Here's the drill:</p>
             <ul class="list-disc list-inside space-y-2">
                 <li>Each round has <strong>10 questions</strong>: 9 text-based and 1 final picture-based question.</li>
-                <li>Answer correctly to earn <strong>Mosh Pit Points (MPP)</strong>. Perfect rounds get a bonus!</li>
-                <li>Use your points to buy lifelines: get <strong>+5 seconds</strong> on the clock or use a <strong>50/50</strong> to eliminate two wrong answers.</li>
-                <li>Climb the leaderboard and become a trivia legend!</li>
+                <li>Your <strong>Score</strong> for the leaderboard is based on how fast you answer.</li>
+                <li>You also earn <strong>1 Mosh Pit Coin (🤘)</strong> for every correct answer, which you can spend on lifelines.</li>
             </ul>
         </div>
         <div class="mt-4 text-center">
-            <h3 class="text-xl font-bold text-white">Your All-Time High Score</h3>
-            <p class="text-3xl font-bold text-red-600" id="landing-score-display">0 <span class="text-lg text-white">MPP</span></p>
+            <h3 class="text-xl font-bold text-white">Your Mosh Pit Coins</h3>
+            <p class="text-3xl font-bold text-red-600" id="landing-coin-display">0</p>
         </div>
         <button id="start-game-button" class="game-button w-full">Start the Mosh Pit</button>
         <button id="landing-signout-button" class="game-button quit-button w-full">Sign Out</button>
@@ -410,19 +409,20 @@
             </div>
             
             <div class="lifeline-bar">
-                <div class="currency-display">
-                    <div class="currency-item">
-                        <span class="currency-icon">🤘</span>
-                        <span id="mosh-pit-points-count">0</span>
-                    </div>
+                <div class="currency-item">
+                    <span class="text-lg font-bold">Score: <span id="score-display">0</span></span>
                 </div>
-                <div id="buy-time" class="lifeline" title="+5 Seconds (Costs 5 MPP)">
+                <div class="currency-item">
+                    <span class="currency-icon">🤘</span>
+                    <span id="mosh-pit-coins-display">0</span>
+                </div>
+                <div id="buy-time" class="lifeline" title="+5 Seconds (Costs 5 Coins)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
                         <path d="M18 12.75a.75.75 0 000-1.5h-1.5v-1.5a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5z" />
                     </svg>
                 </div>
-                <div id="50-50" class="lifeline" title="50/50 (Costs 10 MPP)">
+                <div id="50-50" class="lifeline" title="50/50 (Costs 10 Coins)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 4.5l-4 4h8l-4-4z" transform="rotate(45 12 12)"/></svg>
                 </div>
                  <div id="help-lifeline" class="lifeline" title="Help">
@@ -479,7 +479,7 @@
             </div>
             <div>
                 <h3 class="text-xl font-bold">Buy Time</h3>
-                <p class="text-sm text-gray-400">Costs 5 Mosh Pit Points</p>
+                <p class="text-sm text-gray-400">Costs 5 Mosh Pit Coins</p>
                 <p>Adds 5 seconds to the timer for the current question.</p>
             </div>
         </div>
@@ -490,8 +490,8 @@
             </div>
             <div>
                 <h3 class="text-xl font-bold">50/50</h3>
-                <p class="text-sm text-gray-400">Costs 10 Mosh Pit Points</p>
-                <p>Removes two incorrect answers, leaving you with a 50/50 chance. Can be used multiple times per round.</p>
+                <p class="text-sm text-gray-400">Costs 10 Mosh Pit Coins</p>
+                <p>Removes two incorrect answers, leaving you with a 50/50 chance.</p>
             </div>
         </div>
 
@@ -531,12 +531,13 @@
             shuffledPictureQuestionIds: [],
             shuffledTextIndex: 0,
             shuffledPictureIndex: 0,
-            moshPitPoints: 0
+            moshPitCoins: 0
         };
 
         let gameQuestions = [];
         let currentQuestionIndex = 0;
-        let score = 0;
+        let score = 0; // Session score for the leaderboard
+        let roundScore = 0; // Correct answers in the current round
         let fiftyFiftyUsedThisQuestion = false;
         let questionTimer;
         let timeLeft = 10;
@@ -555,7 +556,8 @@
         const questionTextEl = document.getElementById('question-text');
         const questionImageEl = document.getElementById('question-image');
         const answerGridEl = document.getElementById('answer-grid');
-        const moshPitPointsCountEl = document.getElementById('mosh-pit-points-count');
+        const scoreDisplayEl = document.getElementById('score-display');
+        const moshPitCoinsDisplayEl = document.getElementById('mosh-pit-coins-display');
         const fiftyFiftyLifelineEl = document.getElementById('50-50');
         const buyTimeLifelineEl = document.getElementById('buy-time');
         const helpLifelineEl = document.getElementById('help-lifeline');
@@ -567,7 +569,7 @@
         const landingSignoutButton = document.getElementById('landing-signout-button');
         const startGameButton = document.getElementById('start-game-button');
         const welcomeMessageEl = document.getElementById('welcome-message');
-        const landingScoreDisplayEl = document.getElementById('landing-score-display');
+        const landingCoinDisplayEl = document.getElementById('landing-coin-display');
 
 
         // Auth elements
@@ -642,7 +644,7 @@
                 triviaContainerEl.style.display = 'none';
                 endOfRoundScreenEl.style.display = 'block';
                 endRoundTitleEl.textContent = "You've Rocked Them All!";
-                endRoundContentEl.textContent = `You've completed all available questions. Your final score is ${userProgress.moshPitPoints} MPP! Click 'Play Again' to start a new season.`;
+                endRoundContentEl.textContent = `You've completed all available questions. Your final score this season was ${score} points! Click 'Play Again' to start a new season.`;
                 continueButtonEl.style.display = 'none';
                 quitButtonEl.textContent = "Play Again";
 
@@ -651,13 +653,14 @@
                 userProgress.shuffledPictureIndex = 0;
                 userProgress.shuffledTextQuestionIds = [];
                 userProgress.shuffledPictureQuestionIds = [];
+                userProgress.moshPitCoins = 0; // Reset coins for new season
                 await saveUserProgress();
 
                 return;
             }
 
             currentQuestionIndex = 0;
-            score = 0;
+            roundScore = 0;
 
             questionTopicEl.textContent = "LOADING...";
             questionTextEl.textContent = "Getting the next setlist...";
@@ -688,7 +691,7 @@
             clearInterval(questionTimer);
             currentQuestionIndex = 0;
             score = 0;
-            userProgress = { shuffledTextQuestionIds: [], shuffledPictureQuestionIds: [], shuffledTextIndex: 0, shuffledPictureIndex: 0, moshPitPoints: 0 };
+            userProgress = { shuffledTextQuestionIds: [], shuffledPictureQuestionIds: [], shuffledTextIndex: 0, shuffledPictureIndex: 0, moshPitCoins: 0 };
             progressBarEl.style.width = '0%';
             endOfRoundScreenEl.style.display = 'none';
             triviaContainerEl.style.display = 'none';
@@ -741,8 +744,9 @@
 
             if (selectedAnswer === correctAnswer) {
                 button.classList.add('correct-answer');
-                score++;
-                userProgress.moshPitPoints++;
+                roundScore++;
+                score += timeLeft; 
+                userProgress.moshPitCoins++; 
                 updateCurrencyDisplay();
             } else {
                 button.classList.add('incorrect-answer');
@@ -762,17 +766,16 @@
             
             userProgress.shuffledTextIndex += gameQuestions.filter(q => !q.imageUrl).length;
             userProgress.shuffledPictureIndex += gameQuestions.filter(q => q.imageUrl).length;
-            await saveUserProgress();
-
+            
             let title = "Round Complete!";
-            let message = `You answered ${score} out of ${gameQuestions.length} questions correctly.`;
-            if (score === gameQuestions.length) {
+            let message = `You answered ${roundScore} out of ${gameQuestions.length} questions correctly.`;
+            if (roundScore === gameQuestions.length) {
                 title = "Perfect Round!";
-                userProgress.moshPitPoints += 5;
+                userProgress.moshPitCoins += 5; // 5 bonus coins
                 updateCurrencyDisplay();
-                message += ` Flawless! You earned a 5-point bonus!`;
+                message += ` Flawless! You earned 5 bonus Mosh Pit Coins!`;
             }
-            message += ` Total Mosh Pit Points: ${userProgress.moshPitPoints}.`;
+            message += ` Your total score this game is ${score}.`;
             
             endRoundTitleEl.textContent = title;
             endRoundContentEl.textContent = message;
@@ -780,10 +783,11 @@
             continueButtonEl.style.display = 'inline-block';
             quitButtonEl.textContent = 'Quit';
 
+            await saveUserProgress();
+            await saveScoreToLeaderboard();
+
             triviaContainerEl.style.display = 'none';
             endOfRoundScreenEl.style.display = 'block';
-            
-            saveScoreToLeaderboard();
         }
 
         // --- Timer Functions ---
@@ -811,16 +815,17 @@
         }
 
         function updateCurrencyDisplay() {
-            moshPitPointsCountEl.textContent = userProgress.moshPitPoints;
+            scoreDisplayEl.textContent = score;
+            moshPitCoinsDisplayEl.textContent = userProgress.moshPitCoins;
             const firstAnswerButton = answerGridEl.querySelector('button');
             const questionInProgress = firstAnswerButton && !firstAnswerButton.disabled;
 
-            if (userProgress.moshPitPoints >= 5 && questionInProgress) {
+            if (userProgress.moshPitCoins >= 5 && questionInProgress) {
                 buyTimeLifelineEl.classList.remove('used');
             } else {
                 buyTimeLifelineEl.classList.add('used');
             }
-            if (userProgress.moshPitPoints >= 10 && !fiftyFiftyUsedThisQuestion && questionInProgress) {
+            if (userProgress.moshPitCoins >= 10 && !fiftyFiftyUsedThisQuestion && questionInProgress) {
                 fiftyFiftyLifelineEl.classList.remove('used');
             } else {
                 fiftyFiftyLifelineEl.classList.add('used');
@@ -829,9 +834,9 @@
 
         fiftyFiftyLifelineEl.onclick = () => {
             const firstAnswerButton = answerGridEl.querySelector('button');
-            if (fiftyFiftyUsedThisQuestion || userProgress.moshPitPoints < 10 || !firstAnswerButton || firstAnswerButton.disabled) return;
+            if (fiftyFiftyUsedThisQuestion || userProgress.moshPitCoins < 10 || !firstAnswerButton || firstAnswerButton.disabled) return;
             
-            userProgress.moshPitPoints -= 10;
+            userProgress.moshPitCoins -= 10;
             fiftyFiftyUsedThisQuestion = true; 
             updateCurrencyDisplay();
             
@@ -851,8 +856,8 @@
 
         buyTimeLifelineEl.onclick = () => {
             const firstAnswerButton = answerGridEl.querySelector('button');
-            if (userProgress.moshPitPoints >= 5 && firstAnswerButton && !firstAnswerButton.disabled) {
-                userProgress.moshPitPoints -= 5;
+            if (userProgress.moshPitCoins >= 5 && firstAnswerButton && !firstAnswerButton.disabled) {
+                userProgress.moshPitCoins -= 5;
                 timeLeft += 5;
                 updateCurrencyDisplay();
                 updateTimerDisplay();
@@ -864,24 +869,31 @@
         async function saveUserProgress() {
             if (!userId) return;
             const progressRef = doc(db, 'userProgress', userId);
-            await setDoc(progressRef, userProgress);
+            await setDoc(progressRef, userProgress, { merge: true });
         }
 
         async function loadUserProgress() {
             const progressRef = doc(db, 'userProgress', userId);
             const docSnap = await getDoc(progressRef);
-            if (docSnap.exists() && docSnap.data().shuffledTextQuestionIds.length > 0) {
-                userProgress = docSnap.data();
-            } else {
-                // First time playing or new season, create a new shuffle
+            const defaults = {
+                shuffledTextQuestionIds: [],
+                shuffledPictureQuestionIds: [],
+                shuffledTextIndex: 0,
+                shuffledPictureIndex: 0,
+                moshPitCoins: 0
+            };
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
                 userProgress = {
-                    shuffledTextQuestionIds: [...allTextQuestionIds].sort(() => Math.random() - 0.5),
-                    shuffledPictureQuestionIds: [...allPictureQuestionIds].sort(() => Math.random() - 0.5),
-                    shuffledTextIndex: 0,
-                    shuffledPictureIndex: 0,
-                    moshPitPoints: 0
+                    shuffledTextQuestionIds: data.shuffledTextQuestionIds || [],
+                    shuffledPictureQuestionIds: data.shuffledPictureQuestionIds || [],
+                    shuffledTextIndex: data.shuffledTextIndex || 0,
+                    shuffledPictureIndex: data.shuffledPictureIndex || 0,
+                    moshPitCoins: data.moshPitCoins || 0 
                 };
-                await saveUserProgress();
+            } else {
+                userProgress = defaults;
             }
         }
 
@@ -891,11 +903,11 @@
             try {
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(leaderboardRef);
-                    const currentHighScore = userDoc.exists() ? userDoc.data().moshPitPoints : 0;
-                    if (userProgress.moshPitPoints > currentHighScore) {
+                    const currentHighScore = userDoc.exists() ? userDoc.data().score : 0;
+                    if (score > currentHighScore) {
                         transaction.set(leaderboardRef, {
                             displayName: username,
-                            moshPitPoints: userProgress.moshPitPoints
+                            score: score
                         });
                     }
                 });
@@ -905,13 +917,13 @@
         }
 
         function listenForLeaderboardUpdates() {
-            const q = query(collection(db, `leaderboard`), orderBy("moshPitPoints", "desc"), limit(10));
+            const q = query(collection(db, `leaderboard`), orderBy("score", "desc"), limit(10));
             onSnapshot(q, (querySnapshot) => {
                 endRoundLeaderboardListEl.innerHTML = '';
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const li = document.createElement('li');
-                    li.innerHTML = `<span>${data.displayName}</span><span>${data.moshPitPoints} MPP</span>`;
+                    li.innerHTML = `<span>${data.displayName}</span><span>${data.score}</span>`;
                     endRoundLeaderboardListEl.appendChild(li);
                 });
             });
@@ -927,7 +939,8 @@
                 await fetchAndCategorizeQuestions();
                 await loadUserProgress();
                 
-                landingScoreDisplayEl.innerHTML = `${userProgress.moshPitPoints} <span class="text-lg text-white">MPP</span>`;
+                landingCoinDisplayEl.textContent = userProgress.moshPitCoins || 0;
+                
                 
                 if (allTextQuestionIds.length < 9 || allPictureQuestionIds.length < 1) {
                      startScreenEl.innerHTML = `
@@ -944,7 +957,6 @@
                 
                 listenForLeaderboardUpdates();
             } else {
-                // No user is signed in
                 resetGameAndSignOut();
             }
         });
@@ -953,6 +965,20 @@
             landingScreenEl.style.display = 'none';
             triviaContainerEl.style.display = 'block';
             usernameDisplayEl.textContent = username;
+            clearInterval(questionTimer);
+            score = 0; 
+            
+            if (!userProgress.shuffledTextQuestionIds || userProgress.shuffledTextQuestionIds.length === 0 || 
+                userProgress.shuffledTextIndex >= userProgress.shuffledTextQuestionIds.length) {
+                
+                console.log("Starting a new season, re-shuffling questions.");
+                userProgress.shuffledTextQuestionIds = [...allTextQuestionIds].sort(() => Math.random() - 0.5);
+                userProgress.shuffledPictureQuestionIds = [...allPictureQuestionIds].sort(() => Math.random() - 0.5);
+                userProgress.shuffledTextIndex = 0;
+                userProgress.shuffledPictureIndex = 0;
+                userProgress.moshPitCoins = 0; 
+            }
+            updateCurrencyDisplay();
             await startNewRound();
         }
         
@@ -1008,14 +1034,9 @@
 
         quitButtonEl.onclick = async () => {
             if (quitButtonEl.textContent === 'Play Again') {
-                // This triggers a full re-shuffle and starts a new game
                 await beginGame();
             } else {
-                // Go back to landing screen
-                const leaderboardRef = doc(db, 'leaderboard', userId);
-                const userDoc = await getDoc(leaderboardRef);
-                const userHighScore = userDoc.exists() ? userDoc.data().moshPitPoints : 0;
-                landingScoreDisplayEl.innerHTML = `${userHighScore} <span class="text-lg text-white">MPP</span>`;
+                landingCoinDisplayEl.textContent = userProgress.moshPitCoins || 0;
                 
                 triviaContainerEl.style.display = 'none';
                 endOfRoundScreenEl.style.display = 'none';
