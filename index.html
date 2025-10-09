@@ -3,508 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mosh Pit Trivia</title>
+    <title>Mosh Pit Trivia - Content Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
-        
-        body {
-            font-family: 'Special Elite', monospace;
-            background-color: #000000;
-            color: #FFFFFF;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 1rem;
-            position: relative;
-        }
-        
-        #background-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000000;
-            z-index: -1;
-        }
-
-        .trivia-container, #start-screen, #end-of-round-screen, #help-modal, #landing-screen {
-            max-width: 768px;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            border: 2px solid #333333;
-            border-radius: 1rem;
-            padding: 1rem;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
-            position: relative;
-            overflow-y: auto;
-            max-height: 95vh;
-        }
-
-        @media (min-width: 640px) {
-            .trivia-container, #start-screen, #end-of-round-screen, #help-modal, #landing-screen {
-                padding: 2rem;
-            }
-        }
-
-        #start-screen, #help-modal, #landing-screen {
-             display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            text-align: center;
-        }
-
-        #help-modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid #B91C1C;
-        }
-        
-        .username {
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-        
-        .currency-display {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .currency-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        body { font-family: 'Special Elite', monospace; }
+        input[type="text"], input[type="number"], select, textarea {
             background-color: #1a1a1a;
+            border: 1px solid #333333;
+            border-radius: 0.5rem;
             padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            border: 1px solid #333333;
-        }
-        
-        .currency-icon {
-            width: 24px;
-            height: 24px;
-        }
-        
-        .question-box {
-            background-color: #1a1a1a;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            border: 1px solid #333333;
-            margin-bottom: 2rem;
-            min-height: 150px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        
-        .question-topic {
-            font-size: 1rem;
-            color: #B91C1C;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-        }
-
-        .question-text {
-            font-size: 1.25rem;
-            font-weight: bold;
-            line-height: 1.4;
-        }
-
-        @media (min-width: 640px) {
-            .question-text {
-                font-size: 1.5rem;
-            }
-        }
-        
-        #question-image {
-            max-height: 256px; /* 16rem */
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .answer-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-        
-        @media (min-width: 640px) {
-            .answer-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        .answer-button {
-            background-color: #2b2b2b;
             color: #FFFFFF;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-        
-        @media (hover: hover) {
-            .answer-button:hover:not(:disabled) {
-                background-color: #333333;
-                box-shadow: 0 0 10px white;
-            }
-        }
-        
-        .answer-button:active:not(:disabled) {
-            transform: scale(0.98);
-        }
-
-        .correct-answer {
-            background-color: #10B981;
-            border-color: #059669;
-            color: #FFFFFF;
-            animation: correct-glow 1s forwards;
-        }
-        
-        .incorrect-answer {
-            background-color: #B91C1C;
-            border-color: #7f1d1d;
-            color: #FFFFFF;
-            animation: incorrect-glow 1s forwards;
-        }
-
-        .lifeline-bar {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        .lifeline {
-            width: 40px;
-            height: 40px;
-            background-color: #1a1a1a;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border: 1px solid #333333;
-            transition: all 0.2s;
-        }
-        
-        .lifeline:hover {
-            border-color: #B91C1C;
-            background-color: #2b2b2b;
-        }
-
-        .lifeline.used {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .lifeline svg {
-            fill: #FFFFFF;
-            width: 20px;
-            height: 20px;
-        }
-        
-        #end-round-leaderboard {
-            margin-top: 2rem;
-            background-color: #1a1a1a;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            border: 1px solid #333333;
-            text-align: left;
-        }
-        
-        #end-round-leaderboard h3 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            text-align: center;
-            color: #B91C1C;
-        }
-        
-        #end-round-leaderboard-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        
-        #end-round-leaderboard-list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #333333;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        #end-round-leaderboard-list li:last-child {
-            border-bottom: none;
-        }
-
-        #auth-container input {
-            background-color: #2b2b2b;
-            border: 1px solid #333333;
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            color: #FFFFFF;
-            text-align: center;
             width: 100%;
         }
-
-        #timer-display.low-time {
-            animation: pulse-red 1s infinite;
-        }
-        
-        .game-button {
-            background-color: #B91C1C;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: bold;
-            margin-top: 1rem;
+        .tab {
+            padding: 0.5rem 1rem;
             cursor: pointer;
-            transition: background-color 0.2s;
+            border-bottom: 2px solid transparent;
         }
-        .game-button:hover:not(:disabled) {
-             background-color: #921313;
-        }
-        .game-button:disabled {
-            background-color: #4b5563;
-            cursor: not-allowed;
-        }
-        .quit-button {
-            background-color: #4b5563;
-        }
-        .quit-button:hover {
-            background-color: #374151;
-        }
-
-        .lifeline-definition {
-            display: flex;
-            gap: 1rem;
-            text-align: left;
-            padding: 1rem 0;
-            border-bottom: 1px solid #333333;
-        }
-         .lifeline-definition:last-child {
-            border-bottom: none;
-        }
-
-
-        @keyframes pulse-red {
-            0% { transform: scale(1); color: #DC2626; }
-            50% { transform: scale(1.1); color: #F87171; }
-            100% { transform: scale(1); color: #DC2626; }
-        }
-
-        @keyframes correct-glow {
-            0% { box-shadow: 0 0 5px #10B981; }
-            50% { box-shadow: 0 0 20px #10B981; }
-            100% { box-shadow: 0 0 5px #10B981; }
-        }
-
-        @keyframes incorrect-glow {
-            0% { box-shadow: 0 0 5px #B91C1C; }
-            50% { box-shadow: 0 0 20px #B91C1C; }
-            100% { box-shadow: 0 0 5px #B91C1C; }
-        }
-
-        #progress-bar {
-            background-image: linear-gradient(to right, #B91C1C, #10B981);
+        .tab.active {
+            border-bottom-color: #B91C1C;
+            color: #B91C1C;
         }
     </style>
 </head>
-<body>
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-2 sm:p-4">
 
-    <div id="background-layer"></div>
-    
-    <!-- Auth Screen (Initially Visible) -->
-    <div id="start-screen" class="p-4 sm:p-8">
-        <h1 class="text-4xl sm:text-5xl font-bold mb-4 text-red-600">Mosh Pit Trivia</h1>
-        <div id="auth-container">
-            <!-- Login Form -->
-            <form id="login-form" class="space-y-4">
-                <h2 class="text-xl font-bold">Login</h2>
-                <input type="email" id="login-email" placeholder="Email" required>
-                <input type="password" id="login-password" placeholder="Password" required>
-                <button type="submit" class="game-button w-full">Login</button>
-                <p class="text-sm text-gray-400">
-                    Don't have an account? 
-                    <button type="button" id="show-signup" class="text-red-500 hover:underline">Sign Up</button>
-                </p>
-            </form>
-
-            <!-- Signup Form -->
-            <form id="signup-form" class="space-y-4" style="display: none;">
-                <h2 class="text-xl font-bold">Sign Up</h2>
-                <input type="text" id="signup-name" placeholder="Display Name" required>
-                <input type="email" id="signup-email" placeholder="Email" required>
-                <input type="password" id="signup-password" placeholder="Password" required>
-                <button type="submit" class="game-button w-full">Sign Up</button>
-                <p class="text-sm text-gray-400">
-                    Already have an account? 
-                    <button type="button" id="show-login" class="text-red-500 hover:underline">Login</button>
-                </p>
-            </form>
-            <p id="auth-error" class="text-red-500 mt-4"></p>
+    <div class="w-full max-w-4xl bg-gray-900 border-2 border-gray-700 rounded-lg p-4 sm:p-6 shadow-lg">
+        <h1 class="text-2xl sm:text-3xl font-bold text-red-600 mb-4 text-center">Question Content Manager</h1>
+        
+        <div class="flex border-b border-gray-700 mb-6 flex-wrap">
+            <div id="manage-tab" class="tab active">Manage Questions</div>
+            <div id="manual-tab" class="tab">Add/Edit Question</div>
+            <div id="ai-tab" class="tab">AI Generator</div>
+            <div id="bulk-tab" class="tab">Bulk JSON Upload</div>
         </div>
-    </div>
 
-     <!-- Landing Screen (Shown after login/signup) -->
-    <div id="landing-screen" class="p-4 sm:p-8" style="display: none;">
-        <h1 id="welcome-message" class="text-4xl sm:text-5xl font-bold mb-4 text-red-600">Welcome!</h1>
-        <div class="text-left space-y-4 text-gray-300">
-            <h2 class="text-2xl font-bold text-white">How to Play</h2>
-            <p>Get ready to test your metal knowledge! Here's the drill:</p>
-            <ul class="list-disc list-inside space-y-2">
-                <li>Each round has <strong>10 questions</strong>: 9 text-based and 1 final picture-based question.</li>
-                <li>Your <strong>Score</strong> for the leaderboard is based on how fast you answer.</li>
-                <li>You also earn <strong>1 Mosh Pit Coin (🤘)</strong> for every correct answer, which you can spend on lifelines.</li>
-            </ul>
+        <!-- Manage Questions Tab -->
+        <div id="manage-uploader">
+            <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                <input type="text" id="search-input" placeholder="Search questions...">
+                <select id="category-filter">
+                    <option value="">All Categories</option>
+                    <option value="bulk">Bulk</option>
+                    <option value="curated">Curated</option>
+                    <option value="picture">Picture</option>
+                </select>
+                <input type="number" id="season-filter" placeholder="Filter by Season">
+            </div>
+            <div id="question-list-container" class="space-y-2 h-96 overflow-y-auto p-2 bg-gray-800 rounded">
+                <!-- Questions will be loaded here -->
+            </div>
         </div>
-        <div class="mt-4 text-center">
-            <h3 class="text-xl font-bold text-white">Your Mosh Pit Coins</h3>
-            <p class="text-3xl font-bold text-red-600" id="landing-coin-display">0</p>
-        </div>
-        <button id="start-game-button" class="game-button w-full">Start the Mosh Pit</button>
-        <button id="landing-signout-button" class="game-button quit-button w-full">Sign Out</button>
-    </div>
 
-    <!-- Main Game Screen (Initially Hidden) -->
-    <div class="trivia-container p-4 sm:p-8" style="display: none;">
-        <!-- Header -->
-        <div class="header">
-            <div class="profile">
-                <img class="avatar" src="https://placehold.co/48x48/3B3B3B/9A9A9A?text=U" onerror="this.onerror=null;this.src='https://placehold.co/48x48/cccccc/ffffff?text=X';" alt="User Avatar">
-                <span id="username-display" class="username">Player</span>
+        <!-- Manual Uploader Tab -->
+        <div id="manual-uploader" style="display: none;">
+            <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
+                <p id="form-helper-text" class="text-gray-300">Fill out the form below to add a new question.</p>
             </div>
             
-            <div class="lifeline-bar">
-                <div class="currency-item">
-                    <span class="text-lg font-bold">Score: <span id="score-display">0</span></span>
+            <form id="question-form" class="space-y-4">
+                <input type="hidden" id="edit-id" value="">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="category" class="block mb-2 text-sm font-medium text-gray-300">Category</label>
+                        <select id="category" name="category">
+                            <option value="bulk">Bulk Question</option>
+                            <option value="curated">Curated Question</option>
+                            <option value="picture">Picture Question</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="season" class="block mb-2 text-sm font-medium text-gray-300">Season</label>
+                        <input type="number" id="season" name="season" value="1" min="1" required>
+                    </div>
                 </div>
-                <div class="currency-item">
-                    <span class="currency-icon">🤘</span>
-                    <span id="mosh-pit-coins-display">0</span>
+                 <div id="picture-options" class="hidden space-y-4">
+                    <div>
+                        <label for="picture-type" class="block mb-2 text-sm font-medium text-gray-300">Picture Question Type</label>
+                        <select id="picture-type">
+                            <option value="band">Band Recognition</option>
+                            <option value="album">Album Recognition</option>
+                        </select>
+                    </div>
                 </div>
-                <div id="buy-time" class="lifeline" title="+5 Seconds (Costs 5 Coins)">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-                        <path d="M18 12.75a.75.75 0 000-1.5h-1.5v-1.5a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5z" />
-                    </svg>
+                <div>
+                    <label for="topic" class="block mb-2 text-sm font-medium text-gray-300">Topic</label>
+                    <input type="text" id="topic" name="topic" placeholder="e.g., Band Recognition" required>
                 </div>
-                <div id="50-50" class="lifeline" title="50/50 (Costs 10 Coins)">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 4.5l-4 4h8l-4-4z" transform="rotate(45 12 12)"/></svg>
+                <div>
+                    <label for="question" class="block mb-2 text-sm font-medium text-gray-300">Question Text</label>
+                    <input type="text" id="question" name="question" placeholder="e.g., Which band is this?" required>
                 </div>
-                 <div id="help-lifeline" class="lifeline" title="Help">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                        <path fill-rule="evenodd" d="M9.25 5.25a.75.75 0 011.5 0V6h.75a2.25 2.25 0 012.25 2.25v.75a2.25 2.25 0 01-2.25 2.25h-.75v.25a.75.75 0 01-1.5 0V11.25a.75.75 0 01.75-.75h.75a.75.75 0 00.75-.75V8.25a.75.75 0 00-.75-.75h-1.5V5.25zM12 15.75a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75v-.008a.75.75 0 00-.75-.75H12z" clip-rule="evenodd" />
-                    </svg>
+                 <div>
+                    <label for="imageUrl" class="block mb-2 text-sm font-medium text-gray-300">Image URL (Optional)</label>
+                    <input type="text" id="imageUrl" name="imageUrl" placeholder="https://i.imgur.com/your-image.jpg">
                 </div>
-            </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label for="answer-a" class="block mb-2 text-sm font-medium">Answer A</label><input type="text" id="answer-a" name="answer-a" required></div>
+                    <div><label for="answer-b" class="block mb-2 text-sm font-medium">Answer B</label><input type="text" id="answer-b" name="answer-b" required></div>
+                    <div><label for="answer-c" class="block mb-2 text-sm font-medium">Answer C</label><input type="text" id="answer-c" name="answer-c" required></div>
+                    <div><label for="answer-d" class="block mb-2 text-sm font-medium">Answer D</label><input type="text" id="answer-d" name="answer-d" required></div>
+                </div>
+
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-300">Correct Answer</label>
+                    <div class="flex items-center gap-x-6 gap-y-2 flex-wrap">
+                        <div class="flex items-center"><input id="correct-a" name="correct-answer" type="radio" value="A" class="h-4 w-4 text-red-600" checked><label for="correct-a" class="ml-2">A</label></div>
+                        <div class="flex items-center"><input id="correct-b" name="correct-answer" type="radio" value="B" class="h-4 w-4 text-red-600"><label for="correct-b" class="ml-2">B</label></div>
+                        <div class="flex items-center"><input id="correct-c" name="correct-answer" type="radio" value="C" class="h-4 w-4 text-red-600"><label for="correct-c" class="ml-2">C</label></div>
+                        <div class="flex items-center"><input id="correct-d" name="correct-answer" type="radio" value="D" class="h-4 w-4 text-red-600"><label for="correct-d" class="ml-2">D</label></div>
+                    </div>
+                </div>
+
+                <button id="upload-button" type="submit" class="mt-4 w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Add Question</button>
+            </form>
+            <div id="status-message" class="mt-4 text-center"></div>
         </div>
         
-        <!-- Progress Bar -->
-        <div class="w-full bg-gray-700 rounded-full h-2.5 mb-4">
-            <div id="progress-bar" class="h-2.5 rounded-full" style="width: 0%; transition: width 0.5s ease-in-out;"></div>
+        <!-- AI Generator Tab -->
+        <div id="ai-uploader" style="display: none;">
+             <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
+                <p class="text-gray-300">Select a question type, enter the facts, and let AI generate the rest.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label for="ai-question-type" class="block mb-2 text-sm font-medium text-gray-300">Question Type</label>
+                    <select id="ai-question-type">
+                        <option value="album-year">Album Release Year</option>
+                        <option value="song-lyric">Song from Lyric</option>
+                        <option value="song-album">Song on Album</option>
+                    </select>
+                </div>
+                <div id="ai-inputs"></div>
+                <button id="generate-button" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Generate Question</button>
+            </div>
+             <div id="ai-status-message" class="mt-4 text-center"></div>
         </div>
-
-        <!-- Question -->
-        <div class="question-box">
-            <div id="timer-display" class="text-2xl font-bold text-red-600 mb-4">10</div>
-            <span id="question-topic" class="question-topic">LOADING TRIVIA</span>
-            <img id="question-image" src="" alt="Trivia Image" class="mb-4 rounded-lg hidden w-full h-auto" style="max-height: 256px; object-fit: contain;">
-            <p id="question-text" class="question-text">Getting the show on the road...</p>
-        </div>
-
-        <!-- Answers -->
-        <div id="answer-grid" class="answer-grid"></div>
-    </div>
-
-    <!-- End of Round Screen (Initially Hidden) -->
-    <div id="end-of-round-screen" class="p-4 sm:p-8" style="display: none;">
-        <h2 id="end-round-title" class="text-3xl sm:text-4xl font-bold text-red-600 mb-4">Round Complete!</h2>
-        <p id="end-round-content" class="text-lg mb-6"></p>
-
-        <div id="end-round-leaderboard">
-            <h3>Top Players</h3>
-            <ol id="end-round-leaderboard-list"></ol>
-        </div>
-
-        <div class="flex justify-center gap-4 mt-6">
-            <button id="continue-button" class="game-button">Continue to Next Round</button>
-            <button id="quit-button" class="game-button quit-button">Quit</button>
-        </div>
-    </div>
-
-    <!-- Help Modal -->
-    <div id="help-modal" class="p-4 sm:p-8" style="display: none;">
-        <h2 class="text-3xl sm:text-4xl font-bold text-red-600 mb-4">Lifelines</h2>
         
-        <div class="lifeline-definition">
-            <div class="lifeline flex-shrink-0">
-                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-                    <path d="M18 12.75a.75.75 0 000-1.5h-1.5v-1.5a.75.75 0 00-1.5 0v1.5h-1.5a.75.75 0 000 1.5h1.5v1.5a.75.75 0 001.5 0v-1.5h1.5z" />
-                </svg>
+        <!-- Bulk JSON Uploader Tab -->
+        <div id="bulk-uploader" style="display: none;">
+            <div class="bg-gray-800 border-l-4 border-red-600 p-4 mb-6">
+                <p class="text-gray-300">Paste the entire content of your <code>questions.json</code> file into the text box below and click the upload button.</p>
             </div>
-            <div>
-                <h3 class="text-xl font-bold">Buy Time</h3>
-                <p class="text-sm text-gray-400">Costs 5 Mosh Pit Coins</p>
-                <p>Adds 5 seconds to the timer for the current question.</p>
-            </div>
+            <textarea id="json-input" class="w-full h-96 bg-gray-800 border border-gray-600 rounded p-2 text-white font-mono" placeholder='[ { "topic": "...", "category": "bulk", ... } ]'></textarea>
+            <button id="bulk-upload-button" class="mt-4 w-full bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded transition">Upload JSON</button>
+            <div id="bulk-status-message" class="mt-4 text-center"></div>
         </div>
 
-        <div class="lifeline-definition">
-            <div class="lifeline flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 4.5l-4 4h8l-4-4z" transform="rotate(45 12 12)"/></svg>
-            </div>
-            <div>
-                <h3 class="text-xl font-bold">50/50</h3>
-                <p class="text-sm text-gray-400">Costs 10 Mosh Pit Coins</p>
-                <p>Removes two incorrect answers, leaving you with a 50/50 chance.</p>
-            </div>
-        </div>
-
-        <button id="close-help-button" class="game-button">Got It</button>
     </div>
-
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, collection, query, limit, runTransaction, orderBy, getDocs, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, query, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // --- Firebase Setup ---
+
         const firebaseConfig = {
           apiKey: "AIzaSyDWRy98n7R2T-_iAWZKFJHoo9q7ISms1oA",
           authDomain: "mosh-pit-trivia.firebaseapp.com",
@@ -514,544 +169,325 @@
           appId: "1:49415406295:web:a6c6ad785af58fd4f9a692",
           measurementId: "G-6L8WR5T0VT"
         };
-        
-        // --- DO NOT EDIT BELOW THIS LINE ---
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        let userId = '';
-        let username = '';
 
-        // --- Game State Variables ---
-        let allTextQuestionIds = [];
-        let allPictureQuestionIds = [];
-        
-        let userProgress = {
-            shuffledTextQuestionIds: [],
-            shuffledPictureQuestionIds: [],
-            shuffledTextIndex: 0,
-            shuffledPictureIndex: 0,
-            moshPitCoins: 0
+        // --- Global State ---
+        let allQuestions = []; // To cache questions for filtering
+
+        // --- DOM Elements ---
+        const tabs = {
+            manage: document.getElementById('manage-tab'),
+            manual: document.getElementById('manual-tab'),
+            ai: document.getElementById('ai-tab'),
+            bulk: document.getElementById('bulk-tab'),
         };
+        const pages = {
+            manage: document.getElementById('manage-uploader'),
+            manual: document.getElementById('manual-uploader'),
+            ai: document.getElementById('ai-uploader'),
+            bulk: document.getElementById('bulk-uploader'),
+        };
+        const form = document.getElementById('question-form');
+        const uploadButton = document.getElementById('upload-button');
+        const statusMessage = document.getElementById('status-message');
+        const imageUrlInput = document.getElementById('imageUrl');
+        const categorySelect = document.getElementById('category');
+        const editIdInput = document.getElementById('edit-id');
+        const formHelperText = document.getElementById('form-helper-text');
+        const questionListContainer = document.getElementById('question-list-container');
+        const searchInput = document.getElementById('search-input');
+        const categoryFilter = document.getElementById('category-filter');
+        const seasonFilter = document.getElementById('season-filter');
+        const pictureOptionsDiv = document.getElementById('picture-options');
+        const pictureTypeSelect = document.getElementById('picture-type');
+        const topicInput = document.getElementById('topic');
+        const questionInput = document.getElementById('question');
 
-        let gameQuestions = [];
-        let currentQuestionIndex = 0;
-        let score = 0; // Session score for the leaderboard
-        let roundScore = 0; // Correct answers in the current round
-        let fiftyFiftyUsedThisQuestion = false;
-        let questionTimer;
-        let timeLeft = 10;
-        
-        // --- DOM Element References ---
-        const startScreenEl = document.getElementById('start-screen');
-        const landingScreenEl = document.getElementById('landing-screen');
-        const triviaContainerEl = document.querySelector('.trivia-container');
-        const endOfRoundScreenEl = document.getElementById('end-of-round-screen');
-        const endRoundTitleEl = document.getElementById('end-round-title');
-        const endRoundContentEl = document.getElementById('end-round-content');
-        const endRoundLeaderboardListEl = document.getElementById('end-round-leaderboard-list');
-        const continueButtonEl = document.getElementById('continue-button');
-        const quitButtonEl = document.getElementById('quit-button');
-        const questionTopicEl = document.getElementById('question-topic');
-        const questionTextEl = document.getElementById('question-text');
-        const questionImageEl = document.getElementById('question-image');
-        const answerGridEl = document.getElementById('answer-grid');
-        const scoreDisplayEl = document.getElementById('score-display');
-        const moshPitCoinsDisplayEl = document.getElementById('mosh-pit-coins-display');
-        const fiftyFiftyLifelineEl = document.getElementById('50-50');
-        const buyTimeLifelineEl = document.getElementById('buy-time');
-        const helpLifelineEl = document.getElementById('help-lifeline');
-        const helpModalEl = document.getElementById('help-modal');
-        const closeHelpButtonEl = document.getElementById('close-help-button');
-        const usernameDisplayEl = document.getElementById('username-display');
-        const timerDisplayEl = document.getElementById('timer-display');
-        const progressBarEl = document.getElementById('progress-bar');
-        const landingSignoutButton = document.getElementById('landing-signout-button');
-        const startGameButton = document.getElementById('start-game-button');
-        const welcomeMessageEl = document.getElementById('welcome-message');
-        const landingCoinDisplayEl = document.getElementById('landing-coin-display');
-
-
-        // Auth elements
-        const authContainer = document.getElementById('auth-container');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const showSignupBtn = document.getElementById('show-signup');
-        const showLoginBtn = document.getElementById('show-login');
-        const authErrorEl = document.getElementById('auth-error');
-
-        // --- Data Fetching and Transformation ---
-        
-        function transformQuestionData(qData) {
-            if (!qData) return null;
-            const answers = [qData["answer a"], qData["answer b"], qData["answer c"], qData["answer d"]].filter(Boolean);
-            let correctAnswerText = "";
-            const correctKey = qData["correct answer"] ? qData["correct answer"].toUpperCase() : '';
-
-            if (correctKey === "A") correctAnswerText = qData["answer a"];
-            else if (correctKey === "B") correctAnswerText = qData["answer b"];
-            else if (correctKey === "C") correctAnswerText = qData["answer c"];
-            else if (correctKey === "D") correctAnswerText = qData["answer d"];
-            
-            return {
-                topic: qData.topic,
-                question: qData.question,
-                answers: answers,
-                correct: correctAnswerText,
-                imageUrl: qData.imageUrl || null
-            };
-        }
-
-        async function fetchAndCategorizeQuestions() {
-            if (allTextQuestionIds.length > 0 || allPictureQuestionIds.length > 0) return;
-            try {
-                const questionsCollectionRef = collection(db, `questions`);
-                const snapshot = await getDocs(query(questionsCollectionRef));
-                snapshot.docs.forEach(doc => {
-                    const data = doc.data();
-                    if (data.imageUrl) {
-                        allPictureQuestionIds.push(doc.id);
-                    } else {
-                        allTextQuestionIds.push(doc.id);
-                    }
-                });
-            } catch (error) {
-                console.error("Could not fetch question IDs:", error);
-                startScreenEl.innerHTML = '<h1>Error</h1><p>Could not load questions from the database. Please check your Firestore security rules.</p>';
-            }
-        }
-
-        async function fetchQuestionsByIds(ids) {
-            if (ids.length === 0) return [];
-            const promises = ids.map(id => getDoc(doc(db, `questions`, id)));
-            const docSnapshots = await Promise.all(promises);
-            return docSnapshots.map(docSnap => transformQuestionData(docSnap.data())).filter(Boolean);
-        }
-
-        // --- Core Game Functions ---
-        function updateProgressBar() {
-            let progressPercentage = 0;
-            if (gameQuestions.length > 0) {
-                 progressPercentage = (currentQuestionIndex / gameQuestions.length) * 100;
-            }
-            progressBarEl.style.width = `${progressPercentage}%`;
-        }
-
-        async function startNewRound() {
-            if (userProgress.shuffledTextIndex >= userProgress.shuffledTextQuestionIds.length || 
-                userProgress.shuffledPictureIndex >= userProgress.shuffledPictureQuestionIds.length) {
-                
-                triviaContainerEl.style.display = 'none';
-                endOfRoundScreenEl.style.display = 'block';
-                endRoundTitleEl.textContent = "You've Rocked Them All!";
-                endRoundContentEl.textContent = `You've completed all available questions. Your final score this season was ${score} points! Click 'Play Again' to start a new season.`;
-                continueButtonEl.style.display = 'none';
-                quitButtonEl.textContent = "Play Again";
-
-                // Reset progress for next season
-                userProgress.shuffledTextIndex = 0;
-                userProgress.shuffledPictureIndex = 0;
-                userProgress.shuffledTextQuestionIds = [];
-                userProgress.shuffledPictureQuestionIds = [];
-                userProgress.moshPitCoins = 0; // Reset coins for new season
-                await saveUserProgress();
-
-                return;
-            }
-
-            currentQuestionIndex = 0;
-            roundScore = 0;
-
-            questionTopicEl.textContent = "LOADING...";
-            questionTextEl.textContent = "Getting the next setlist...";
-            answerGridEl.innerHTML = '';
-            
-            const textIdsForRound = userProgress.shuffledTextQuestionIds.slice(userProgress.shuffledTextIndex, userProgress.shuffledTextIndex + 9);
-            const pictureIdForRound = userProgress.shuffledPictureQuestionIds[userProgress.shuffledPictureIndex];
-            
-            const roundIds = [...textIdsForRound, pictureIdForRound].filter(Boolean);
-            gameQuestions = await fetchQuestionsByIds(roundIds);
-            
-            gameQuestions.sort((a, b) => (a.imageUrl ? 1 : 0) - (b.imageUrl ? 1 : 0));
-            
-            if (gameQuestions.length > 0 && gameQuestions[gameQuestions.length - 1].imageUrl) {
-                const preloader = new Image();
-                preloader.src = gameQuestions[gameQuestions.length - 1].imageUrl;
-            }
-
-            if(gameQuestions.length === 0){
-                questionTextEl.textContent = "Failed to load questions from the database. Please try again.";
-                return;
-            }
-            
-            loadQuestion();
-        }
-        
-        function resetGameAndSignOut() {
-            clearInterval(questionTimer);
-            currentQuestionIndex = 0;
-            score = 0;
-            userProgress = { shuffledTextQuestionIds: [], shuffledPictureQuestionIds: [], shuffledTextIndex: 0, shuffledPictureIndex: 0, moshPitCoins: 0 };
-            progressBarEl.style.width = '0%';
-            endOfRoundScreenEl.style.display = 'none';
-            triviaContainerEl.style.display = 'none';
-            landingScreenEl.style.display = 'none';
-            startScreenEl.style.display = 'flex';
-        }
-
-        function loadQuestion() {
-            if (currentQuestionIndex >= gameQuestions.length) {
-                progressBarEl.style.width = '100%';
-                handleRoundComplete();
-                return;
-            }
-            updateProgressBar();
-            fiftyFiftyUsedThisQuestion = false;
-
-            const currentQuestion = gameQuestions[currentQuestionIndex];
-            
-            if (currentQuestion.imageUrl) {
-                questionImageEl.src = currentQuestion.imageUrl;
-                questionImageEl.style.display = 'block';
-            } else {
-                questionImageEl.style.display = 'none';
-            }
-
-            questionTopicEl.textContent = currentQuestion.topic;
-            questionTextEl.textContent = currentQuestion.question;
-            answerGridEl.innerHTML = '';
-
-            const shuffledAnswers = [...currentQuestion.answers].sort(() => Math.random() - 0.5);
-
-            shuffledAnswers.forEach(answer => {
-                const button = document.createElement('button');
-                button.textContent = answer;
-                button.className = 'answer-button';
-                button.onclick = () => checkAnswer(answer, currentQuestion.correct, button);
-                answerGridEl.appendChild(button);
-            });
-
-            clearInterval(questionTimer);
-            timeLeft = 10;
-            updateTimerDisplay();
-            updateCurrencyDisplay(); 
-            startTimer();
-        }
-
-        function checkAnswer(selectedAnswer, correctAnswer, button) {
-            clearInterval(questionTimer);
-            Array.from(answerGridEl.children).forEach(btn => btn.disabled = true);
-
-            if (selectedAnswer === correctAnswer) {
-                button.classList.add('correct-answer');
-                roundScore++;
-                score += timeLeft; 
-                userProgress.moshPitCoins++; 
-                updateCurrencyDisplay();
-            } else {
-                button.classList.add('incorrect-answer');
-                const correctButton = Array.from(answerGridEl.children).find(btn => btn.textContent === correctAnswer);
-                if (correctButton) correctButton.classList.add('correct-answer');
-            }
-            setTimeout(nextQuestion, 2000);
-        }
-
-        function nextQuestion() {
-            currentQuestionIndex++;
-            loadQuestion();
-        }
-
-        async function handleRoundComplete() {
-            clearInterval(questionTimer);
-            
-            userProgress.shuffledTextIndex += gameQuestions.filter(q => !q.imageUrl).length;
-            userProgress.shuffledPictureIndex += gameQuestions.filter(q => q.imageUrl).length;
-            
-            let title = "Round Complete!";
-            let message = `You answered ${roundScore} out of ${gameQuestions.length} questions correctly.`;
-            if (roundScore === gameQuestions.length) {
-                title = "Perfect Round!";
-                userProgress.moshPitCoins += 5; // 5 bonus coins
-                updateCurrencyDisplay();
-                message += ` Flawless! You earned 5 bonus Mosh Pit Coins!`;
-            }
-            message += ` Your total score this game is ${score}.`;
-            
-            endRoundTitleEl.textContent = title;
-            endRoundContentEl.textContent = message;
-            
-            continueButtonEl.style.display = 'inline-block';
-            quitButtonEl.textContent = 'Quit';
-
-            await saveUserProgress();
-            await saveScoreToLeaderboard();
-
-            triviaContainerEl.style.display = 'none';
-            endOfRoundScreenEl.style.display = 'block';
-        }
-
-        // --- Timer Functions ---
-
-        function startTimer() {
-            questionTimer = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 0) {
-                    clearInterval(questionTimer);
-                    Array.from(answerGridEl.children).forEach(btn => btn.disabled = true);
-                    const correctButton = Array.from(answerGridEl.children).find(btn => btn.textContent === gameQuestions[currentQuestionIndex].correct);
-                    if (correctButton) correctButton.classList.add('correct-answer');
-                    setTimeout(nextQuestion, 1500); 
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            timerDisplayEl.textContent = timeLeft;
-            timerDisplayEl.classList.remove('low-time');
-            if (timeLeft <= 5) {
-                timerDisplayEl.classList.add('low-time');
-            }
-        }
-
-        function updateCurrencyDisplay() {
-            scoreDisplayEl.textContent = score;
-            moshPitCoinsDisplayEl.textContent = userProgress.moshPitCoins;
-            const firstAnswerButton = answerGridEl.querySelector('button');
-            const questionInProgress = firstAnswerButton && !firstAnswerButton.disabled;
-
-            if (userProgress.moshPitCoins >= 5 && questionInProgress) {
-                buyTimeLifelineEl.classList.remove('used');
-            } else {
-                buyTimeLifelineEl.classList.add('used');
-            }
-            if (userProgress.moshPitCoins >= 10 && !fiftyFiftyUsedThisQuestion && questionInProgress) {
-                fiftyFiftyLifelineEl.classList.remove('used');
-            } else {
-                fiftyFiftyLifelineEl.classList.add('used');
-            }
-        }
-
-        fiftyFiftyLifelineEl.onclick = () => {
-            const firstAnswerButton = answerGridEl.querySelector('button');
-            if (fiftyFiftyUsedThisQuestion || userProgress.moshPitCoins < 10 || !firstAnswerButton || firstAnswerButton.disabled) return;
-            
-            userProgress.moshPitCoins -= 10;
-            fiftyFiftyUsedThisQuestion = true; 
-            updateCurrencyDisplay();
-            
-            const currentQuestion = gameQuestions[currentQuestionIndex];
-            const incorrectAnswers = currentQuestion.answers.filter(ans => ans !== currentQuestion.correct);
-            const answersToRemove = [...incorrectAnswers].sort(() => Math.random() - 0.5).slice(0, 2);
-
-            let removedCount = 0;
-            Array.from(answerGridEl.children).forEach(button => {
-                if (answersToRemove.includes(button.textContent) && removedCount < 2) {
-                    button.classList.add('opacity-10', 'cursor-not-allowed');
-                    button.disabled = true;
-                    removedCount++;
+        // --- Tab Logic ---
+        function switchTab(activeTab) {
+            Object.keys(tabs).forEach(key => {
+                if (tabs[key]) {
+                    tabs[key].classList.toggle('active', key === activeTab);
+                    pages[key].style.display = key === activeTab ? 'block' : 'none';
                 }
             });
-        };
-
-        buyTimeLifelineEl.onclick = () => {
-            const firstAnswerButton = answerGridEl.querySelector('button');
-            if (userProgress.moshPitCoins >= 5 && firstAnswerButton && !firstAnswerButton.disabled) {
-                userProgress.moshPitCoins -= 5;
-                timeLeft += 5;
-                updateCurrencyDisplay();
-                updateTimerDisplay();
-            }
-        };
-
-        // --- User Data and Progress ---
-
-        async function saveUserProgress() {
-            if (!userId) return;
-            const progressRef = doc(db, 'userProgress', userId);
-            await setDoc(progressRef, userProgress, { merge: true });
         }
-
-        async function loadUserProgress() {
-            const progressRef = doc(db, 'userProgress', userId);
-            const docSnap = await getDoc(progressRef);
-            const defaults = {
-                shuffledTextQuestionIds: [],
-                shuffledPictureQuestionIds: [],
-                shuffledTextIndex: 0,
-                shuffledPictureIndex: 0,
-                moshPitCoins: 0
-            };
-
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                userProgress = {
-                    shuffledTextQuestionIds: data.shuffledTextQuestionIds || [],
-                    shuffledPictureQuestionIds: data.shuffledPictureQuestionIds || [],
-                    shuffledTextIndex: data.shuffledTextIndex || 0,
-                    shuffledPictureIndex: data.shuffledPictureIndex || 0,
-                    moshPitCoins: data.moshPitCoins || 0 
-                };
-            } else {
-                userProgress = defaults;
+        Object.keys(tabs).forEach(key => {
+            if (tabs[key]) {
+                tabs[key].addEventListener('click', () => switchTab(key));
             }
-        }
+        });
+        
+        tabs.manual.addEventListener('click', () => {
+            switchTab('manual');
+            editIdInput.value = ''; // Clear edit state
+            form.reset();
+            uploadButton.textContent = 'Add Question';
+            formHelperText.textContent = 'Fill out the form below to add a new question.';
+            togglePictureOptions();
+        });
 
-        async function saveScoreToLeaderboard() {
-            if (!userId) return;
-            const leaderboardRef = doc(db, 'leaderboard', userId);
+
+        // --- Manage Questions Logic ---
+        async function loadAndRenderQuestions() {
+            questionListContainer.innerHTML = '<p>Loading questions...</p>';
             try {
-                await runTransaction(db, async (transaction) => {
-                    const userDoc = await transaction.get(leaderboardRef);
-                    const currentHighScore = userDoc.exists() ? userDoc.data().score : 0;
-                    if (score > currentHighScore) {
-                        transaction.set(leaderboardRef, {
-                            displayName: username,
-                            score: score
-                        });
-                    }
-                });
+                const q = query(collection(db, "questions"));
+                const querySnapshot = await getDocs(q);
+                allQuestions = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderFilteredQuestions();
             } catch (error) {
-                console.error("Error saving score:", error);
+                console.error("Error fetching questions:", error);
+                questionListContainer.innerHTML = `<p class="text-red-500">Error loading questions: ${error.message}. Check console and Firestore rules.</p>`;
             }
         }
 
-        function listenForLeaderboardUpdates() {
-            const q = query(collection(db, `leaderboard`), orderBy("score", "desc"), limit(10));
-            onSnapshot(q, (querySnapshot) => {
-                endRoundLeaderboardListEl.innerHTML = '';
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const li = document.createElement('li');
-                    li.innerHTML = `<span>${data.displayName}</span><span>${data.score}</span>`;
-                    endRoundLeaderboardListEl.appendChild(li);
-                });
+        function renderFilteredQuestions() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const categoryValue = categoryFilter.value;
+            const seasonValue = seasonFilter.value;
+
+            const filtered = allQuestions.filter(q => {
+                const qQuestion = q.question || '';
+                const qTopic = q.topic || '';
+                const matchesSearch = searchTerm === '' || qQuestion.toLowerCase().includes(searchTerm) || qTopic.toLowerCase().includes(searchTerm);
+                const matchesCategory = categoryValue === '' || q.category === categoryValue;
+                const matchesSeason = seasonValue === '' || (q.season && q.season.toString() === seasonValue);
+                return matchesSearch && matchesCategory && matchesSeason;
+            });
+
+            questionListContainer.innerHTML = '';
+            if (filtered.length === 0) {
+                questionListContainer.innerHTML = '<p>No questions found matching your criteria.</p>';
+                return;
+            }
+
+            filtered.forEach(q => {
+                const item = document.createElement('div');
+                item.className = 'p-2 bg-gray-700 rounded flex justify-between items-center flex-wrap gap-2';
+                item.innerHTML = `
+                    <div class="flex-grow">
+                        <p class="font-bold">${q.question}</p>
+                        <p class="text-sm text-gray-400">Category: ${q.category || 'N/A'} | Season: ${q.season || 'N/A'} | Topic: ${q.topic}</p>
+                    </div>
+                    <div class="flex gap-2 flex-shrink-0">
+                        <button data-id="${q.id}" class="edit-btn bg-blue-600 text-xs px-2 py-1 rounded">Edit</button>
+                        <button data-id="${q.id}" class="delete-btn bg-red-700 text-xs px-2 py-1 rounded">Delete</button>
+                    </div>
+                `;
+                questionListContainer.appendChild(item);
             });
         }
+        
+        searchInput.addEventListener('input', renderFilteredQuestions);
+        categoryFilter.addEventListener('change', renderFilteredQuestions);
+        seasonFilter.addEventListener('input', renderFilteredQuestions);
 
-        // --- Initialization & Auth ---
+        questionListContainer.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('edit-btn')) {
+                const id = e.target.dataset.id;
+                const questionToEdit = allQuestions.find(q => q.id === id);
+                if (questionToEdit) {
+                    editIdInput.value = id;
+                    form.elements['category'].value = questionToEdit.category || 'bulk';
+                    form.elements['season'].value = questionToEdit.season || 1;
+                    topicInput.value = questionToEdit.topic || '';
+                    questionInput.value = questionToEdit.question || '';
+                    form.elements['imageUrl'].value = questionToEdit.imageUrl || '';
+                    form.elements['answer-a'].value = questionToEdit['answer a'] || '';
+                    form.elements['answer-b'].value = questionToEdit['answer b'] || '';
+                    form.elements['answer-c'].value = questionToEdit['answer c'] || '';
+                    form.elements['answer-d'].value = questionToEdit['answer d'] || '';
+                    
+                    const correctRadio = document.querySelector(`input[name="correct-answer"][value="${questionToEdit['correct answer']}"]`);
+                    if(correctRadio) correctRadio.checked = true;
+                    
+                    togglePictureOptions();
+                    if (questionToEdit.category === 'picture') {
+                        if (questionToEdit.topic.toLowerCase().includes('album')) {
+                            pictureTypeSelect.value = 'album';
+                        } else {
+                            pictureTypeSelect.value = 'band';
+                        }
+                    }
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                userId = user.uid;
-                username = user.displayName;
-                
-                await fetchAndCategorizeQuestions();
-                await loadUserProgress();
-                
-                landingCoinDisplayEl.textContent = userProgress.moshPitCoins || 0;
-                
-                
-                if (allTextQuestionIds.length < 9 || allPictureQuestionIds.length < 1) {
-                     startScreenEl.innerHTML = `
-                        <h1 class="text-3xl font-bold text-red-500 mb-4">Not Enough Questions</h1>
-                        <p>Please use the uploader tool to add more questions to the database.</p>
-                        <p class="mt-2">You need at least <strong>9 text questions</strong> and <strong>1 picture question</strong> to play.</p>
-                     `;
-                     startScreenEl.style.display = 'flex';
+                    uploadButton.textContent = 'Save Changes';
+                    formHelperText.textContent = 'You are now editing an existing question.';
+                    switchTab('manual');
+                }
+            } else if (e.target.classList.contains('delete-btn')) {
+                const id = e.target.dataset.id;
+                if (confirm('Are you sure you want to delete this question?')) {
+                    try {
+                        await deleteDoc(doc(db, "questions", id));
+                        loadAndRenderQuestions();
+                    } catch (error) {
+                        console.error("Error deleting document: ", error);
+                        alert("Could not delete question. Check the console for details.");
+                    }
+                }
+            }
+        });
+
+
+        // --- Manual Uploader Logic ---
+        function togglePictureOptions() {
+            if (categorySelect.value === 'picture') {
+                pictureOptionsDiv.classList.remove('hidden');
+                pictureTypeSelect.dispatchEvent(new Event('change'));
+            } else {
+                pictureOptionsDiv.classList.add('hidden');
+            }
+        }
+        
+        categorySelect.addEventListener('change', togglePictureOptions);
+        imageUrlInput.addEventListener('input', () => {
+            if (imageUrlInput.value.trim() !== '') {
+                categorySelect.value = 'picture';
+                togglePictureOptions();
+            }
+        });
+        pictureTypeSelect.addEventListener('change', () => {
+            const type = pictureTypeSelect.value;
+            if (type === 'album') {
+                topicInput.value = 'Album Recognition';
+                questionInput.value = 'What album is this?';
+            } else if (type === 'band') {
+                topicInput.value = 'Band Recognition';
+                questionInput.value = 'What band is this?';
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const questionData = {
+                category: formData.get('category'),
+                season: parseInt(formData.get('season'), 10),
+                topic: formData.get('topic'),
+                question: formData.get('question'),
+                imageUrl: formData.get('imageUrl') || null,
+                'answer a': formData.get('answer-a'),
+                'answer b': formData.get('answer-b'),
+                'answer c': formData.get('answer-c'),
+                'answer d': formData.get('answer-d'),
+                'correct answer': formData.get('correct-answer'),
+            };
+
+            if (!questionData.imageUrl) delete questionData.imageUrl;
+
+            const isEditing = editIdInput.value !== '';
+            statusMessage.textContent = isEditing ? 'Saving changes...' : 'Uploading question...';
+            statusMessage.style.color = 'white';
+            uploadButton.disabled = true;
+            uploadButton.textContent = isEditing ? 'Saving...' : 'Uploading...';
+
+            try {
+                if (isEditing) {
+                    await setDoc(doc(db, "questions", editIdInput.value), questionData);
+                    statusMessage.textContent = 'Successfully saved changes!';
                 } else {
-                    startScreenEl.style.display = 'none';
-                    landingScreenEl.style.display = 'flex';
-                    welcomeMessageEl.textContent = `Welcome, ${username}!`;
+                    await addDoc(collection(db, "questions"), questionData);
+                    statusMessage.textContent = 'Successfully added new question!';
                 }
                 
-                listenForLeaderboardUpdates();
-            } else {
-                resetGameAndSignOut();
-            }
-        });
-
-        async function beginGame() {
-            landingScreenEl.style.display = 'none';
-            triviaContainerEl.style.display = 'block';
-            usernameDisplayEl.textContent = username;
-            clearInterval(questionTimer);
-            score = 0; 
-            
-            if (!userProgress.shuffledTextQuestionIds || userProgress.shuffledTextQuestionIds.length === 0 || 
-                userProgress.shuffledTextIndex >= userProgress.shuffledTextQuestionIds.length) {
+                statusMessage.style.color = 'green';
+                form.reset();
+                editIdInput.value = '';
+                uploadButton.textContent = 'Add Question';
+                formHelperText.textContent = 'Fill out the form below to add a new question.';
+                togglePictureOptions();
                 
-                console.log("Starting a new season, re-shuffling questions.");
-                userProgress.shuffledTextQuestionIds = [...allTextQuestionIds].sort(() => Math.random() - 0.5);
-                userProgress.shuffledPictureQuestionIds = [...allPictureQuestionIds].sort(() => Math.random() - 0.5);
-                userProgress.shuffledTextIndex = 0;
-                userProgress.shuffledPictureIndex = 0;
-                userProgress.moshPitCoins = 0; 
-            }
-            updateCurrencyDisplay();
-            await startNewRound();
-        }
-        
-        showSignupBtn.addEventListener('click', () => {
-            loginForm.style.display = 'none';
-            signupForm.style.display = 'block';
-        });
+                await loadAndRenderQuestions();
+                setTimeout(() => switchTab('manage'), 1000);
 
-        showLoginBtn.addEventListener('click', () => {
-            signupForm.style.display = 'none';
-            loginForm.style.display = 'block';
-        });
-        
-        signupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            authErrorEl.textContent = '';
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(userCredential.user, { displayName: name });
             } catch (error) {
-                authErrorEl.textContent = error.message;
+                statusMessage.textContent = `Error: ${error.message}.`;
+                statusMessage.style.color = 'red';
+                console.error("Upload/Edit error:", error);
+            } finally {
+                uploadButton.disabled = false;
+                 uploadButton.textContent = editIdInput.value ? 'Save Changes' : 'Add Question';
             }
         });
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            authErrorEl.textContent = '';
+        // --- AI Generator Logic ---
+        const generateButton = document.getElementById('generate-button');
+        const aiStatusMessage = document.getElementById('ai-status-message');
+        const aiQuestionTypeSelect = document.getElementById('ai-question-type');
+        const aiInputsContainer = document.getElementById('ai-inputs');
+
+        function renderAiInputs() { /* ... */ } 
+
+        aiQuestionTypeSelect.addEventListener('change', renderAiInputs);
+        renderAiInputs(); 
+        
+        generateButton.addEventListener('click', async () => { /* ... */ });
+        
+        // --- Bulk Uploader Logic ---
+        const bulkUploadButton = document.getElementById('bulk-upload-button');
+        const jsonInput = document.getElementById('json-input');
+        const bulkStatusMessage = document.getElementById('bulk-status-message');
+
+        bulkUploadButton.addEventListener('click', async () => {
+            const jsonText = jsonInput.value.trim();
+            if (!jsonText) {
+                bulkStatusMessage.textContent = "Error: Text box is empty.";
+                bulkStatusMessage.style.color = 'red';
+                return;
+            }
+
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                const questions = JSON.parse(jsonText);
+                if (!Array.isArray(questions)) {
+                    throw new Error("Input is not a valid JSON array.");
+                }
+
+                bulkStatusMessage.textContent = `Uploading ${questions.length} questions...`;
+                bulkStatusMessage.style.color = 'white';
+                bulkUploadButton.disabled = true;
+                bulkUploadButton.textContent = 'Uploading...';
+
+                const batch = writeBatch(db);
+                const questionsCollectionRef = collection(db, "questions");
+
+                questions.forEach(questionData => {
+                    const newQuestionRef = doc(questionsCollectionRef);
+                    batch.set(newQuestionRef, questionData);
+                });
+
+                await batch.commit();
+
+                bulkStatusMessage.textContent = `Successfully uploaded ${questions.length} questions!`;
+                bulkStatusMessage.style.color = 'green';
+                jsonInput.value = '';
+                await loadAndRenderQuestions();
+
             } catch (error) {
-                authErrorEl.textContent = error.message;
+                bulkStatusMessage.textContent = `Error: ${error.message}. Please check the console for details.`;
+                bulkStatusMessage.style.color = 'red';
+                console.error("Bulk Upload Error:", error);
+            } finally {
+                bulkUploadButton.disabled = false;
+                bulkUploadButton.textContent = 'Upload JSON';
             }
         });
         
-        landingSignoutButton.onclick = () => {
-            signOut(auth);
-        }
-        
-        startGameButton.onclick = () => {
-            beginGame();
-        };
-
-        continueButtonEl.onclick = () => {
-            endOfRoundScreenEl.style.display = 'none';
-            triviaContainerEl.style.display = 'block';
-            startNewRound();
-        };
-
-        quitButtonEl.onclick = async () => {
-            if (quitButtonEl.textContent === 'Play Again') {
-                await beginGame();
-            } else {
-                landingCoinDisplayEl.textContent = userProgress.moshPitCoins || 0;
-                
-                triviaContainerEl.style.display = 'none';
-                endOfRoundScreenEl.style.display = 'none';
-                startScreenEl.style.display = 'none';
-                landingScreenEl.style.display = 'flex';
+        // Initial Load
+        window.onload = async () => {
+            try {
+                await signInAnonymously(auth);
+                console.log("Signed in anonymously");
+                loadAndRenderQuestions();
+            } catch(e) {
+                console.error("Anonymous sign in failed", e);
+                questionListContainer.innerHTML = `<p class="text-red-500">Could not connect to the database. Please check your Firebase setup and security rules.</p>`;
             }
         };
-
-        helpLifelineEl.onclick = () => {
-            helpModalEl.style.display = 'flex';
-        }
-
-        closeHelpButtonEl.onclick = () => {
-            helpModalEl.style.display = 'none';
-        }
 
     </script>
 </body>
