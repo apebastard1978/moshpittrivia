@@ -898,15 +898,16 @@
         }
 
         async function saveScoreToLeaderboard() {
-            if (!userId) return;
-            const leaderboardRef = doc(db, 'leaderboard', userId);
+            if (!auth.currentUser) return;
+            const currentUser = auth.currentUser;
+            const leaderboardRef = doc(db, 'leaderboard', currentUser.uid);
             try {
                 await runTransaction(db, async (transaction) => {
                     const userDoc = await transaction.get(leaderboardRef);
                     const currentHighScore = userDoc.exists() ? userDoc.data().score : 0;
                     if (score > currentHighScore) {
                         transaction.set(leaderboardRef, {
-                            displayName: username,
+                            displayName: currentUser.displayName,
                             score: score
                         });
                     }
